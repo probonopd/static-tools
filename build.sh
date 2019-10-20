@@ -6,14 +6,13 @@
 wget http://dl-cdn.alpinelinux.org/alpine/v3.10/releases/x86_64/alpine-minirootfs-3.10.2-x86_64.tar.gz
 mkdir -p ./miniroot
 cd ./miniroot
-sudo tar xf ../alpine-minirootfs-3.10.2-x86_64.tar.gz
+tar xf ../alpine-minirootfs-3.10.2-x86_64.tar.gz
 cd -
 
 #############################################
 # Prepare chroot
 #############################################
 
-sudo su
 cd ./miniroot
 mount -o bind /dev ./dev
 mount -t proc none ./proc
@@ -87,7 +86,6 @@ cd ../../
 
 exit // chroot
 umount proc sys dev
-exit // sudo su
 cd ..
 
 #############################################
