@@ -1,5 +1,6 @@
 language: none
 sudo: require
+dist: xenial
 
 script:
   - bash -ex build.sh
