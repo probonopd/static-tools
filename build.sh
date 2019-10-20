@@ -18,7 +18,7 @@ sudo mount -o bind /dev ./dev
 sudo mount -t proc none ./proc
 sudo mount -t sysfs none ./sys
 sudo cp -p /etc/resolv.conf etc/
-sudo chroot . edit <<EOF
+sudo chroot . <<EOF
 
 #############################################
 # Now inside chroot
