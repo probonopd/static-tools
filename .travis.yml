@@ -1,9 +1,9 @@
 language: none
 sudo: require
-dist: xenial
+dist: trusty
 
 script:
-  - bash -ex build.sh
+  - sudo bash -ex build.sh
 
 after_success:
   - wget -c https://github.com/probonopd/uploadtool/raw/master/upload.sh
