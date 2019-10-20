@@ -18,7 +18,7 @@ mount -o bind /dev ./dev
 mount -t proc none ./proc
 mount -t sysfs none ./sys
 cp -p /etc/resolv.conf etc/
-chroot . /bin/sh -l
+chroot . edit <<EOF
 
 #############################################
 # Now inside chroot
@@ -85,6 +85,7 @@ cd ../../
 #############################################
 
 exit // chroot
+EOF
 umount proc sys dev
 cd ..
 
