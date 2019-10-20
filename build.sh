@@ -13,12 +13,13 @@ cd -
 # Prepare chroot
 #############################################
 
+sudo su
 cd ./miniroot
-sudo mount -o bind /dev ./dev
-sudo mount -t proc none ./proc
-sudo mount -t sysfs none ./sys
-sudo cp -p /etc/resolv.conf etc/
-sudo chroot . /bin/sh -l
+mount -o bind /dev ./dev
+mount -t proc none ./proc
+mount -t sysfs none ./sys
+cp -p /etc/resolv.conf etc/
+chroot . /bin/sh -l
 
 #############################################
 # Now inside chroot
@@ -83,9 +84,10 @@ cd ../../
 #############################################
 # Exit chroot and clean up
 #############################################
- 
-exit
-sudo umount proc sys dev
+
+exit // chroot
+umount proc sys dev
+exit // sudo su
 cd ..
 
 #############################################
