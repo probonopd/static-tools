@@ -4,8 +4,10 @@
 #############################################
 
 wget http://dl-cdn.alpinelinux.org/alpine/v3.10/releases/x86_64/alpine-minirootfs-3.10.2-x86_64.tar.gz
-mkdir miniroot
-( cd miniroot ; sudo tar xf ../alpine-minirootfs-3.10.2-x86_64.tar.gz )
+mkdir -p ./miniroot
+cd ./miniroot
+sudo tar xf ../alpine-minirootfs-3.10.2-x86_64.tar.gz
+cd -
 
 #############################################
 # Prepare chroot
