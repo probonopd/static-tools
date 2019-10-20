@@ -17,7 +17,7 @@ sudo mount -o bind /dev miniroot/dev
 sudo mount -t proc none miniroot/proc
 sudo mount -t sysfs none miniroot/sys
 sudo cp -p /etc/resolv.conf miniroot/etc/
-sudo chroot miniroot <<\EOF
+sudo chroot miniroot /bin/sh <<\EOF
 
 #############################################
 # Now inside chroot
