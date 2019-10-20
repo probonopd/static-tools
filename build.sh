@@ -13,12 +13,11 @@ cd -
 # Prepare chroot
 #############################################
 
-sudo cd ./miniroot
-sudo mount -o bind /dev ./dev
-sudo mount -t proc none ./proc
-sudo mount -t sysfs none ./sys
-sudo cp -p /etc/resolv.conf etc/
-sudo chroot . <<EOF
+sudo mount -o bind /dev miniroot/dev
+sudo mount -t proc none miniroot/proc
+sudo mount -t sysfs none miniroot/sys
+sudo cp -p /etc/resolv.conf miniroot/etc/
+sudo chroot miniroot <<EOF
 
 #############################################
 # Now inside chroot
