@@ -13,7 +13,7 @@ cd -
 # Prepare chroot
 #############################################
 
-sudo cd miniroot
+cd ./miniroot
 sudo mount -o bind /dev ./dev
 sudo mount -t proc none ./proc
 sudo mount -t sysfs none ./sys
