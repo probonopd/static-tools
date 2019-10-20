@@ -11,7 +11,7 @@ mkdir miniroot
 # Prepare chroot
 #############################################
 
-cd miniroot
+sudo cd miniroot
 sudo mount -o bind /dev ./dev
 sudo mount -t proc none ./proc
 sudo mount -t sysfs none ./sys
@@ -93,3 +93,6 @@ cd ..
 mkdir -p out/
 find miniroot/ -type f -executable -name '*squashfs' -exec cp {} out/ \; 2>/dev/null
 find miniroot/ -type f -executable -name 'bsdtar' -exec cp {} out/ \; 2>/dev/null
+find miniroot/ -type f -executable -name 'desktop-file-install' -exec cp {} out/ \; 2>/dev/null
+find miniroot/ -type f -executable -name 'desktop-file-validate' -exec cp {} out/ \; 2>/dev/null
+find miniroot/ -type f -executable -name 'update-desktop-database' -exec cp {} out/ \; 2>/dev/null
