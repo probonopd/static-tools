@@ -13,12 +13,12 @@ cd -
 # Prepare chroot
 #############################################
 
-cd ./miniroot
-mount -o bind /dev ./dev
-mount -t proc none ./proc
-mount -t sysfs none ./sys
-cp -p /etc/resolv.conf etc/
-chroot . edit <<EOF
+sudo cd ./miniroot
+sudo mount -o bind /dev ./dev
+sudo mount -t proc none ./proc
+sudo mount -t sysfs none ./sys
+sudo cp -p /etc/resolv.conf etc/
+sudo chroot . edit <<EOF
 
 #############################################
 # Now inside chroot
@@ -86,7 +86,7 @@ cd ../../
 
 exit // chroot
 EOF
-umount proc sys dev
+sudo umount proc sys dev
 cd ..
 
 #############################################
