@@ -83,7 +83,7 @@ cd ../../
 # Exit chroot and clean up
 #############################################
 
-exit // chroot
+exit
 EOF
 sudo umount proc sys dev
 cd ..
