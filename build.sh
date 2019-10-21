@@ -85,7 +85,7 @@ cd ../../
 
 exit
 EOF
-sudo umount proc sys dev
+sudo umount miniroot/proc miniroot/sys miniroot/dev
 cd ..
 
 #############################################
