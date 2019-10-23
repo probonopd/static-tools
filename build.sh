@@ -48,7 +48,7 @@ strip *squashfs
 cd ..
 
 # Build static desktop-file-utils
-apk add glib-static
+apk add glib-static glib-dev
 wget -c https://www.freedesktop.org/software/desktop-file-utils/releases/desktop-file-utils-0.15.tar.gz
 tar xf desktop-file-utils-0.15.tar.gz 
 cd desktop-file-utils-0.15
@@ -97,3 +97,4 @@ find miniroot/ -type f -executable -name 'bsdtar' -exec cp {} out/ \; 2>/dev/nul
 find miniroot/ -type f -executable -name 'desktop-file-install' -exec cp {} out/ \; 2>/dev/null
 find miniroot/ -type f -executable -name 'desktop-file-validate' -exec cp {} out/ \; 2>/dev/null
 find miniroot/ -type f -executable -name 'update-desktop-database' -exec cp {} out/ \; 2>/dev/null
+find miniroot/ -type f -executable -name 'appstreamcli.tar.gz' -exec cp {} out/ \; 2>/dev/null
