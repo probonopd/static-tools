@@ -27,16 +27,6 @@ sudo chroot miniroot /bin/sh <<\EOF
 apk update
 apk add alpine-sdk bash util-linux strace file zlib-dev # OK: 198 MiB in 66 packages
 
-# Build static bsdtar
-wget https://www.libarchive.org/downloads/libarchive-3.3.2.tar.gz
-tar xf libarchive-3.3.2.tar.gz
-cd libarchive-3.3.2
-./configure LDFLAGS='--static' --enable-bsdtar=static --disable-shared --with-zlib
-make -j$(nproc)
-ld -static -o bsdtar tar/bsdtar-bsdtar.o tar/bsdtar-cmdline.o tar/bsdtar-creation_set.o tar/bsdtar-read.o tar/bsdtar-subst.o tar/bsdtar-util.o tar/bsdtar-write.o /usr/lib/crt1.o .libs/libarchive.a .libs/libarchive_fe.a /usr/lib/libc.a  /lib/libz.a 
-strip bsdtar
-cd ..
-
 # Build static squashfs-tools
 wget -c http://deb.debian.org/debian/pool/main/s/squashfs-tools/squashfs-tools_4.4.orig.tar.gz
 tar xf squashfs-tools_4.4.orig.tar.gz
@@ -78,6 +68,16 @@ patchelf --set-rpath '$ORIGIN' tools/appstreamcli
 strip ./tools/*
 (cd tools/ ; tar cfvj ../appstreamcli.tar.gz * )
 cd ../../
+
+# Build static bsdtar
+wget https://www.libarchive.org/downloads/libarchive-3.3.2.tar.gz
+tar xf libarchive-3.3.2.tar.gz
+cd libarchive-3.3.2
+./configure LDFLAGS='--static' --enable-bsdtar=static --disable-shared --with-zlib
+make -j$(nproc)
+ld -static -o bsdtar tar/bsdtar-bsdtar.o tar/bsdtar-cmdline.o tar/bsdtar-creation_set.o tar/bsdtar-read.o tar/bsdtar-subst.o tar/bsdtar-util.o tar/bsdtar-write.o /usr/lib/crt1.o .libs/libarchive.a .libs/libarchive_fe.a /usr/lib/libc.a  /lib/libz.a 
+strip bsdtar
+cd ..
 
 #############################################
 # Exit chroot and clean up
