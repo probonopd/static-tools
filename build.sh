@@ -13,11 +13,10 @@ cd -
 # Prepare chroot
 #############################################
 
-sudo mount -o bind /dev miniroot/dev
-sudo mount -t proc none miniroot/proc
-sudo mount -t sysfs none miniroot/sys
-sudo cp -p /etc/resolv.conf miniroot/etc/
-sudo chroot miniroot /bin/sh <<\EOF
+wget -c https://github.com/just-containers/PRoot/releases/download/v5.1.0-4/proot-5.1.0-amd64.tar.xz
+tar xf proot-5.1.0-amd64.tar.xz
+
+./bin/proot -S ./miniroot -w / /bin/sh <<\EOF
 
 #############################################
 # Now inside chroot
@@ -85,16 +84,15 @@ cd ..
 
 exit
 EOF
-sudo umount miniroot/proc miniroot/sys miniroot/dev
 
 #############################################
 # Copy build artefacts out
 #############################################
 
 mkdir -p out/
-sudo find miniroot/ -type f -executable -name '*squashfs' -exec cp {} out/ \; 2>/dev/null
-sudo find miniroot/ -type f -executable -name 'bsdtar' -exec cp {} out/ \; 2>/dev/null
-sudo find miniroot/ -type f -executable -name 'desktop-file-install' -exec cp {} out/ \; 2>/dev/null
-sudo find miniroot/ -type f -executable -name 'desktop-file-validate' -exec cp {} out/ \; 2>/dev/null
-sudo find miniroot/ -type f -executable -name 'update-desktop-database' -exec cp {} out/ \; 2>/dev/null
-sudo find miniroot/ -type f -name 'appstreamcli.tar.gz' -exec cp {} out/ \; 2>/dev/null
+find miniroot/ -type f -executable -name '*squashfs' -exec cp {} out/ \; 2>/dev/null
+find miniroot/ -type f -executable -name 'bsdtar' -exec cp {} out/ \; 2>/dev/null
+find miniroot/ -type f -executable -name 'desktop-file-install' -exec cp {} out/ \; 2>/dev/null
+find miniroot/ -type f -executable -name 'desktop-file-validate' -exec cp {} out/ \; 2>/dev/null
+find miniroot/ -type f -executable -name 'update-desktop-database' -exec cp {} out/ \; 2>/dev/null
+find miniroot/ -type f -name 'appstreamcli.tar.gz' -exec cp {} out/ \; 2>/dev/null
