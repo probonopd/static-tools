@@ -86,7 +86,6 @@ cd ../../
 exit
 EOF
 sudo umount miniroot/proc miniroot/sys miniroot/dev
-cd ..
 
 #############################################
 # Copy build artefacts out
