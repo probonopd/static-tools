@@ -25,7 +25,7 @@ sudo chroot miniroot /bin/sh <<\EOF
 
 # Install build dependencies
 apk update
-apk add alpine-sdk bash util-linux strace file zlib-dev # OK: 198 MiB in 66 packages
+apk add alpine-sdk bash util-linux strace file zlib-dev zlib-static # OK: 198 MiB in 66 packages
 
 # Build static squashfs-tools
 wget -c http://deb.debian.org/debian/pool/main/s/squashfs-tools/squashfs-tools_4.4.orig.tar.gz
