@@ -70,7 +70,7 @@ strip ./tools/*
 cd ../../
 
 # Build static bsdtar
-apk add zlib-static
+apk add zlib-static bzip2-dev
 wget https://www.libarchive.org/downloads/libarchive-3.3.2.tar.gz
 tar xf libarchive-3.3.2.tar.gz
 cd libarchive-3.3.2
