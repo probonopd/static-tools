@@ -99,4 +99,3 @@ sudo find miniroot/ -type f -executable -name 'desktop-file-install' -exec cp {}
 sudo find miniroot/ -type f -executable -name 'desktop-file-validate' -exec cp {} out/ \; 2>/dev/null
 sudo find miniroot/ -type f -executable -name 'update-desktop-database' -exec cp {} out/ \; 2>/dev/null
 sudo find miniroot/ -type f -name 'appstreamcli.tar.gz' -exec cp {} out/ \; 2>/dev/null
-sudo find miniroot/ -type f -executable -name 'firejail' -exec cp {} out/ \; 2>/dev/null
