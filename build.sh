@@ -74,9 +74,9 @@ apk add zlib-static bzip2-dev
 wget https://www.libarchive.org/downloads/libarchive-3.3.2.tar.gz
 tar xf libarchive-3.3.2.tar.gz
 cd libarchive-3.3.2
-./configure LDFLAGS='--static' --enable-bsdtar=static --disable-shared --with-zlib
+./configure LDFLAGS='--static' --enable-bsdtar=static --disable-shared --with-zlib --without-bz2lib
 make -j$(nproc)
-ld -static -o bsdtar tar/bsdtar-bsdtar.o tar/bsdtar-cmdline.o tar/bsdtar-creation_set.o tar/bsdtar-read.o tar/bsdtar-subst.o tar/bsdtar-util.o tar/bsdtar-write.o /usr/lib/crt1.o .libs/libarchive.a .libs/libarchive_fe.a /usr/lib/libc.a /lib/libz.a /usr/lib/libbz2.a /usr/lib/libc.a
+ld -static -o bsdtar tar/bsdtar-bsdtar.o tar/bsdtar-cmdline.o tar/bsdtar-creation_set.o tar/bsdtar-read.o tar/bsdtar-subst.o tar/bsdtar-util.o tar/bsdtar-write.o .libs/libarchive.a .libs/libarchive_fe.a /lib/libz.a /usr/lib/crt1.o /usr/lib/libc.a
 strip bsdtar
 cd ..
 
@@ -88,7 +88,7 @@ cd firejail-*
 ./configure
 make -j$(nproc)
 ( cd src/firejail ; ld -static -lpthread -o firejail appimage.o appimage_size.o arp.o bandwidth.o caps.o cgroup.o checkcfg.o cmdline.o cpu.o dbus.o env.o fs.o fs_bin.o fs_dev.o fs_etc.o fs_home.o fs_hostname.o fs_lib.o fs_lib2.o fs_logger.o fs_mkdir.o fs_trace.o fs_var.o fs_whitelist.o join.o ls.o macros.o main.o mountinfo.o netfilter.o netns.o network.o network_main.o no_sandbox.o output.o paths.o preproc.o profile.o protocol.o pulseaudio.o restrict_users.o restricted_shell.o rlimit.o run_files.o run_symlink.o sandbox.o sbox.o seccomp.o shutdown.o usage.o util.o x11.o ../lib/common.o ../lib/ldd_utils.o ../lib/firejail_user.o  /usr/lib/crt1.o /usr/lib/libc.a )
-strip src/filejail/bsdtar
+strip src/firejail/firejail
 cd ..
 
 #############################################
