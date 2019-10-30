@@ -80,6 +80,17 @@ ld -static -o bsdtar tar/bsdtar-bsdtar.o tar/bsdtar-cmdline.o tar/bsdtar-creatio
 strip bsdtar
 cd ..
 
+# Build static Firejail
+apk add linux-headers
+wget https://github.com/netblue30/firejail/archive/0.9.56.2-LTS.tar.gz
+tar xf 0.9.56.2-LTS.tar.gz 
+cd firejail-*
+./configure
+make -j$(nproc)
+( cd src/firejail ; ld -static -lpthread -o firejail appimage.o appimage_size.o arp.o bandwidth.o caps.o cgroup.o checkcfg.o cmdline.o cpu.o dbus.o env.o fs.o fs_bin.o fs_dev.o fs_etc.o fs_home.o fs_hostname.o fs_lib.o fs_lib2.o fs_logger.o fs_mkdir.o fs_trace.o fs_var.o fs_whitelist.o join.o ls.o macros.o main.o mountinfo.o netfilter.o netns.o network.o network_main.o no_sandbox.o output.o paths.o preproc.o profile.o protocol.o pulseaudio.o restrict_users.o restricted_shell.o rlimit.o run_files.o run_symlink.o sandbox.o sbox.o seccomp.o shutdown.o usage.o util.o x11.o ../lib/common.o ../lib/ldd_utils.o ../lib/firejail_user.o  /usr/lib/crt1.o /usr/lib/libc.a )
+strip src/filejail/bsdtar
+cd ..
+
 #############################################
 # Exit chroot and clean up
 #############################################
@@ -99,3 +110,4 @@ sudo find miniroot/ -type f -executable -name 'desktop-file-install' -exec cp {}
 sudo find miniroot/ -type f -executable -name 'desktop-file-validate' -exec cp {} out/ \; 2>/dev/null
 sudo find miniroot/ -type f -executable -name 'update-desktop-database' -exec cp {} out/ \; 2>/dev/null
 sudo find miniroot/ -type f -name 'appstreamcli.tar.gz' -exec cp {} out/ \; 2>/dev/null
+sudo find miniroot/ -type f -executable -name 'firejail' -exec cp {} out/ \; 2>/dev/null
