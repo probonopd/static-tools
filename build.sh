@@ -94,7 +94,7 @@ sudo umount miniroot/proc miniroot/sys miniroot/dev
 #############################################
 
 wget https://github.com/NixOS/patchelf/archive/0.9.tar.gz # 0.10 cripples my files, puts XXXXX inside
-tar xf *.tar.gz 
+tar xf 0.9.tar.gz
 cd patchelf-*/
 sudo apt install autoconf
 ./bootstrap.sh
