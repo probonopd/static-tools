@@ -89,6 +89,21 @@ EOF
 sudo umount miniroot/proc miniroot/sys miniroot/dev
 
 #############################################
+# Build static patchelf
+# https://github.com/NixOS/patchelf/issues/185
+#############################################
+
+wget https://github.com/NixOS/patchelf/archive/0.9.tar.gz # 0.10 cripples my files, puts XXXXX inside
+tar xf *.tar.gz 
+cd patchelf-*/
+sudo apt install autoconf
+./bootstrap.sh
+./configure --prefix=/usr
+make -j$(nproc) LDFLAGS=-static
+file src/patchelf
+cd -
+
+#############################################
 # Copy build artefacts out
 #############################################
 
@@ -99,3 +114,4 @@ sudo find miniroot/ -type f -executable -name 'desktop-file-install' -exec cp {}
 sudo find miniroot/ -type f -executable -name 'desktop-file-validate' -exec cp {} out/ \; 2>/dev/null
 sudo find miniroot/ -type f -executable -name 'update-desktop-database' -exec cp {} out/ \; 2>/dev/null
 sudo find miniroot/ -type f -name 'appstreamcli.tar.gz' -exec cp {} out/ \; 2>/dev/null
+sudo find patchelf-*/ -type f -executable -name 'patchelf' -exec cp {} out/ \; 2>/dev/null
