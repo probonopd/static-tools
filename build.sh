@@ -66,7 +66,7 @@ cp $libs tools/
 cp /lib/ld-musl-x86_64.so.1 tools/
 patchelf --set-rpath '$ORIGIN' tools/appstreamcli
 strip ./tools/*
-(cd tools/ ; tar cfvj ../appstreamcli.tar.gz * )
+(cd tools/ ; tar cfvj ../appstreamcli.tar.bz2 * )
 cd ../../
 
 # Build static bsdtar
