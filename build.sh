@@ -1,3 +1,6 @@
+set +x 
+set +e 
+
 if [ "$TRAVIS_ARCH" = "aarch64" ] ; then
   export ARCHITECTURE=aarch64
 else
