@@ -1,12 +1,17 @@
+if [ "$TRAVIS_ARCH" -eq "aarch64" ] ; then
+  export ARCHITECTURE=aarch64
+else
+  export ARCHITECTURE=x86_64
+fi
 
 #############################################
 # Download and extract minimal Alpine system
 #############################################
 
-wget http://dl-cdn.alpinelinux.org/alpine/v3.10/releases/x86_64/alpine-minirootfs-3.10.2-x86_64.tar.gz
+wget http://dl-cdn.alpinelinux.org/alpine/v3.10/releases/$ARCHITECTURE/alpine-minirootfs-3.10.2-$ARCHITECTURE.tar.gz
 mkdir -p ./miniroot
 cd ./miniroot
-tar xf ../alpine-minirootfs-3.10.2-x86_64.tar.gz
+tar xf ../alpine-minirootfs-3.10.2-$ARCHITECTURE.tar.gz
 cd -
 
 #############################################
@@ -63,7 +68,7 @@ meson ..
 ninja -v
 libs=$(ldd  ./tools/appstreamcli | cut -d " " -f 3 | sort | uniq )
 cp $libs tools/
-cp /lib/ld-musl-x86_64.so.1 tools/
+cp /lib/ld-musl-$ARCHITECTURE.so.1 tools/
 patchelf --set-rpath '$ORIGIN' tools/appstreamcli
 strip ./tools/*
 (cd tools/ ; tar cfvj ../appstreamcli.tar.bz2 * )
@@ -108,10 +113,10 @@ cd -
 #############################################
 
 mkdir -p out/
-sudo find miniroot/ -type f -executable -name '*squashfs' -exec cp {} out/ \; 2>/dev/null
-sudo find miniroot/ -type f -executable -name 'bsdtar' -exec cp {} out/ \; 2>/dev/null
-sudo find miniroot/ -type f -executable -name 'desktop-file-install' -exec cp {} out/ \; 2>/dev/null
-sudo find miniroot/ -type f -executable -name 'desktop-file-validate' -exec cp {} out/ \; 2>/dev/null
-sudo find miniroot/ -type f -executable -name 'update-desktop-database' -exec cp {} out/ \; 2>/dev/null
-sudo find miniroot/ -type f -name 'appstreamcli.tar.bz2' -exec cp {} out/ \; 2>/dev/null
-sudo find patchelf-*/ -type f -executable -name 'patchelf' -exec cp {} out/ \; 2>/dev/null
+sudo find miniroot/ -type f -executable -name '*squashfs' -exec cp {} out/{}-$ARCHITECTURE \; 2>/dev/null
+sudo find miniroot/ -type f -executable -name 'bsdtar' -exec cp {} out/{}-$ARCHITECTURE \; 2>/dev/null
+sudo find miniroot/ -type f -executable -name 'desktop-file-install' -exec cp {} out/{}-$ARCHITECTURE \; 2>/dev/null
+sudo find miniroot/ -type f -executable -name 'desktop-file-validate' -exec cp {} out/{}-$ARCHITECTURE \; 2>/dev/null
+sudo find miniroot/ -type f -executable -name 'update-desktop-database' -exec cp {} out/{}-$ARCHITECTURE \; 2>/dev/null
+sudo find miniroot/ -type f -name 'appstreamcli.tar.bz2' -exec cp {} out/{}-$ARCHITECTURE \; 2>/dev/null
+sudo find patchelf-*/ -type f -executable -name 'patchelf' -exec cp {} out/{}-$ARCHITECTURE \; 2>/dev/null
