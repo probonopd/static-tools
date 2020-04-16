@@ -2,7 +2,12 @@ language: bash
 sudo: require
 dist: trusty
 
+arch:
+  - amd64
+  - arm64
+
 script:
+  - env
   - bash -ex build.sh
 
 after_success:
