@@ -113,10 +113,11 @@ cd -
 #############################################
 
 mkdir -p out/
-sudo find miniroot/ -type f -executable -name '*squashfs' -exec cp {} out/{}-$ARCHITECTURE \; 2>/dev/null
-sudo find miniroot/ -type f -executable -name 'bsdtar' -exec cp {} out/{}-$ARCHITECTURE \; 2>/dev/null
-sudo find miniroot/ -type f -executable -name 'desktop-file-install' -exec cp {} out/{}-$ARCHITECTURE \; 2>/dev/null
-sudo find miniroot/ -type f -executable -name 'desktop-file-validate' -exec cp {} out/{}-$ARCHITECTURE \; 2>/dev/null
-sudo find miniroot/ -type f -executable -name 'update-desktop-database' -exec cp {} out/{}-$ARCHITECTURE \; 2>/dev/null
-sudo find miniroot/ -type f -name 'appstreamcli.tar.bz2' -exec cp {} out/{}-$ARCHITECTURE \; 2>/dev/null
-sudo find patchelf-*/ -type f -executable -name 'patchelf' -exec cp {} out/{}-$ARCHITECTURE \; 2>/dev/null
+sudo find miniroot/ -type f -executable -name 'mksquashfs' -exec cp {} out/mksquashfs-$ARCHITECTURE \; 2>/dev/null
+sudo find miniroot/ -type f -executable -name 'unsquashfs' -exec cp {} out/unsquashfs-$ARCHITECTURE \; 2>/dev/null
+sudo find miniroot/ -type f -executable -name 'bsdtar' -exec cp {} out/bsdtar-$ARCHITECTURE \; 2>/dev/null
+sudo find miniroot/ -type f -executable -name 'desktop-file-install' -exec cp {} out/desktop-file-install-$ARCHITECTURE \; 2>/dev/null
+sudo find miniroot/ -type f -executable -name 'desktop-file-validate' -exec cp {} out/desktop-file-validate-$ARCHITECTURE \; 2>/dev/null
+sudo find miniroot/ -type f -executable -name 'update-desktop-database' -exec cp {} out/update-desktop-database-$ARCHITECTURE \; 2>/dev/null
+sudo find miniroot/ -type f -name 'appstreamcli.tar.bz2' -exec cp {} out/appstreamcli-$ARCHITECTURE.tar.bz2 \; 2>/dev/null
+sudo find patchelf-*/ -type f -executable -name 'patchelf' -exec cp {} out/patchelf-$ARCHITECTURE \; 2>/dev/null
