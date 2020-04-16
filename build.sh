@@ -47,6 +47,9 @@ apk add glib-static glib-dev
 wget -c https://www.freedesktop.org/software/desktop-file-utils/releases/desktop-file-utils-0.15.tar.gz
 tar xf desktop-file-utils-0.15.tar.gz 
 cd desktop-file-utils-0.15
+# The next 2 lines are a workaround for: checking build system type... ./config.guess: unable to guess system type
+wget 'http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD' -O posix/config.guess
+wget 'http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD' -O posix/config.sub
 ./configure
 make -j$(nproc)	
 cd src/
