@@ -1,4 +1,4 @@
-if [ "$TRAVIS_ARCH" = "aarch64" ] ; then
+if [ "$TRAVIS_ARCH" == "aarch64" ] ; then
   export ARCHITECTURE=aarch64
 else
   export ARCHITECTURE=x86_64
