@@ -79,7 +79,7 @@ strip ./tools/appstreamcli
 cd ../../
 
 # Build static bsdtar
-apk add zlib-static bzip2-dev
+apk add zlib-dev bzip2-dev # What happened to zlib-static?
 wget https://www.libarchive.org/downloads/libarchive-3.3.2.tar.gz
 tar xf libarchive-3.3.2.tar.gz
 cd libarchive-3.3.2
