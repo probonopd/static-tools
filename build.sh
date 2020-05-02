@@ -30,7 +30,7 @@ sudo chroot miniroot /bin/sh <<\EOF
 
 # Install build dependencies
 apk update
-apk add alpine-sdk bash util-linux strace file zlib-dev # OK: 198 MiB in 66 packages
+apk add alpine-sdk bash util-linux strace file zlib-dev autoconf
 
 # Build static squashfs-tools
 wget -c http://deb.debian.org/debian/pool/main/s/squashfs-tools/squashfs-tools_4.4.orig.tar.gz
@@ -48,8 +48,9 @@ wget -c https://www.freedesktop.org/software/desktop-file-utils/releases/desktop
 tar xf desktop-file-utils-0.15.tar.gz 
 cd desktop-file-utils-0.15
 # The next 2 lines are a workaround for: checking build system type... ./config.guess: unable to guess system type
-wget 'http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD' -O posix/config.guess
-wget 'http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD' -O posix/config.sub
+# wget 'http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD' -O posix/config.guess
+# wget 'http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD' -O posix/config.sub
+autoreconf --install # https://github.com/shendurelab/LACHESIS/issues/31#issuecomment-283963819
 ./configure
 make -j$(nproc)	
 cd src/
