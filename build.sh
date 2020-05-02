@@ -39,7 +39,7 @@ cd squashfs-tools-4.4/squashfs-tools
 make -j$(nproc)
 ld -static mksquashfs.o read_fs.o action.o swap.o pseudo.o compressor.o sort.o progressbar.o read_file.o info.o restore.o process_fragments.o caches-queues-lists.o gzip_wrapper.o xattr.o read_xattrs.o /usr/lib/crt1.o /usr/lib/libc.a -lm -lz -o mksquashfs
 ld -static unsquashfs.o unsquash-1.o unsquash-2.o unsquash-3.o unsquash-4.o unsquash-123.o unsquash-34.o swap.o compressor.o unsquashfs_info.o gzip_wrapper.o read_xattrs.o unsquashfs_xattr.o /usr/lib/crt1.o /usr/lib/libc.a -lm -lz -o unsquashfs
-strip *squashfs
+strip mksquashfs unsquashfs
 cd ../../
 
 # Build static desktop-file-utils
@@ -74,7 +74,7 @@ libs=$(ldd  ./tools/appstreamcli | cut -d " " -f 3 | sort | uniq )
 cp $libs tools/
 cp /lib/ld-musl-$ARCHITECTURE.so.1 tools/
 patchelf --set-rpath '$ORIGIN' tools/appstreamcli
-strip ./tools/*
+strip ./tools/appstreamcli
 (cd tools/ ; tar cfvj ../appstreamcli.tar.bz2 * )
 cd ../../
 
