@@ -1,9 +1,3 @@
-if [ "$TRAVIS_ARCH" == "aarch64" ] ; then
-  export ARCHITECTURE=aarch64
-else
-  export ARCHITECTURE=x86_64
-fi
-
 #############################################
 # Download and extract minimal Alpine system
 #############################################
@@ -129,3 +123,4 @@ sudo find miniroot/ -type f -executable -name 'desktop-file-validate' -exec cp {
 sudo find miniroot/ -type f -executable -name 'update-desktop-database' -exec cp {} out/update-desktop-database-$ARCHITECTURE \; 2>/dev/null
 sudo find miniroot/ -type f -name 'appstreamcli.tar.bz2' -exec cp {} out/appstreamcli-$ARCHITECTURE.tar.bz2 \; 2>/dev/null
 sudo find patchelf-*/ -type f -executable -name 'patchelf' -exec cp {} out/patchelf-$ARCHITECTURE \; 2>/dev/null
+sudo rm -rf miniroot/
