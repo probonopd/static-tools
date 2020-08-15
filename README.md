@@ -14,7 +14,6 @@ This one I did not find out yet how to build static, but bundling musl libc is s
 
 * Build verbose (e.g., `make -j$(nproc) VERBOSE=1`)
 * Look for the gcc command that produces the executable (`-o name_of_the_executable`)
-* Replace `gcc` with `ld`
+* Replace `gcc` with `gcc -static`
 * Remove all `-W...`
 * Remove `-lpthread`
-* At the end, add `/usr/lib/crt1.o /usr/lib/libc.a`
