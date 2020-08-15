@@ -77,9 +77,6 @@ apk add glib-static meson cmake libxml2-dev yaml-dev lmdb-dev gobject-introspect
 wget -c https://github.com/ximion/appstream/archive/v0.12.9.tar.gz
 tar xf v0.12.9.tar.gz
 cd appstream-0.12.9
-sed -i -e "s|dependency(|dependency(static, |g" meson.build
-sed -i -e "s|library|static_library|g" src/meson.build
-sed -i -e "s|install: true|install: true,\n\tlink_args: ['-static']|g" tools/meson.build
 mkdir build && cd build
 meson ..
 ninja -v
@@ -123,4 +120,4 @@ sudo find miniroot/ -type f -executable -name 'desktop-file-validate' -exec cp {
 sudo find miniroot/ -type f -executable -name 'update-desktop-database' -exec cp {} out/update-desktop-database-$ARCHITECTURE \; 2>/dev/null
 sudo find miniroot/ -type f -name 'appstreamcli.tar.bz2' -exec cp {} out/appstreamcli-$ARCHITECTURE.tar.bz2 \; 2>/dev/null
 sudo find patchelf-*/ -type f -executable -name 'patchelf' -exec cp {} out/patchelf-$ARCHITECTURE \; 2>/dev/null
-sudo rm -rf miniroot/
+sudo rm -rf miniroot/ patchelf-*/
