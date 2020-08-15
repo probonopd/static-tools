@@ -59,7 +59,7 @@ strip mksquashfs unsquashfs
 cd ../../
 
 # Build static desktop-file-utils
-apk add glib-static
+apk add glib-static glib-dev
 wget -c https://www.freedesktop.org/software/desktop-file-utils/releases/desktop-file-utils-0.15.tar.gz
 tar xf desktop-file-utils-0.15.tar.gz 
 cd desktop-file-utils-0.15
