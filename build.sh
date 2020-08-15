@@ -15,6 +15,22 @@ tar xf ../alpine-minirootfs-3.10.2-$ARCHITECTURE.tar.gz
 cd -
 
 #############################################
+# Build static patchelf
+# https://github.com/NixOS/patchelf/issues/185
+#############################################
+
+wget https://github.com/NixOS/patchelf/archive/0.9.tar.gz # 0.10 cripples my files, puts XXXXX inside
+tar xf 0.9.tar.gz
+cd patchelf-*/
+sudo apt install autoconf
+./bootstrap.sh
+./configure --prefix=/usr
+make -j$(nproc) LDFLAGS=-static
+file src/patchelf
+sudo cp src/patchelf ../miniroot/usr/bin/ # Make available inside the chroot too
+cd -
+
+#############################################
 # Prepare chroot
 #############################################
 
@@ -37,8 +53,8 @@ wget -c http://deb.debian.org/debian/pool/main/s/squashfs-tools/squashfs-tools_4
 tar xf squashfs-tools_4.4.orig.tar.gz
 cd squashfs-tools-4.4/squashfs-tools
 make -j$(nproc)
-ld -static mksquashfs.o read_fs.o action.o swap.o pseudo.o compressor.o sort.o progressbar.o read_file.o info.o restore.o process_fragments.o caches-queues-lists.o gzip_wrapper.o xattr.o read_xattrs.o /usr/lib/crt1.o /usr/lib/libc.a -lm -lz -o mksquashfs
-ld -static unsquashfs.o unsquash-1.o unsquash-2.o unsquash-3.o unsquash-4.o unsquash-123.o unsquash-34.o swap.o compressor.o unsquashfs_info.o gzip_wrapper.o read_xattrs.o unsquashfs_xattr.o /usr/lib/crt1.o /usr/lib/libc.a -lm -lz -o unsquashfs
+gcc -static mksquashfs.o read_fs.o action.o swap.o pseudo.o compressor.o sort.o progressbar.o read_file.o info.o restore.o process_fragments.o caches-queues-lists.o gzip_wrapper.o xattr.o read_xattrs.o -lm -lz -o mksquashfs
+gcc -static unsquashfs.o unsquash-1.o unsquash-2.o unsquash-3.o unsquash-4.o unsquash-123.o unsquash-34.o swap.o compressor.o unsquashfs_info.o gzip_wrapper.o read_xattrs.o unsquashfs_xattr.o -lm -lz -o unsquashfs
 strip mksquashfs unsquashfs
 cd ../../
 
@@ -48,22 +64,22 @@ wget -c https://www.freedesktop.org/software/desktop-file-utils/releases/desktop
 tar xf desktop-file-utils-0.15.tar.gz 
 cd desktop-file-utils-0.15
 # The next 2 lines are a workaround for: checking build system type... ./config.guess: unable to guess system type
-# wget 'http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD' -O posix/config.guess
-# wget 'http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD' -O posix/config.sub
+wget 'http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD' -O config.guess
+wget 'http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD' -O config.sub
 autoreconf --install # https://github.com/shendurelab/LACHESIS/issues/31#issuecomment-283963819
 ./configure
 make -j$(nproc)	
 cd src/
-ld -static -o desktop-file-validate keyfileutils.o validate.o validator.o -lglib-2.0 -lintl /usr/lib/crt1.o /usr/lib/libc.a
-ld -static -o update-desktop-database  update-desktop-database.o -lglib-2.0 -lintl /usr/lib/crt1.o /usr/lib/libc.a
-ld -static -o desktop-file-install keyfileutils.o validate.o install.o  -lglib-2.0 -lintl /usr/lib/crt1.o /usr/lib/libc.a
+gcc -static -o desktop-file-validate keyfileutils.o validate.o validator.o -lglib-2.0 -lintl
+gcc -static -o update-desktop-database  update-desktop-database.o -lglib-2.0 -lintl
+gcc -static -o desktop-file-install keyfileutils.o validate.o install.o  -lglib-2.0 -lintl
 strip desktop-file-install desktop-file-validate update-desktop-database
 cd -
 
 # Build appstreamcli
 # But entirely unclear how to make meson build a static binary
 # but unlike with glibc it is rather easy to "bundle everything" with musl, result is 2.8 MB
-apk add glib-static meson cmake libxml2-dev yaml-dev lmdb-dev gobject-introspection-dev snowball-dev gperf patchelf
+apk add glib-static meson cmake libxml2-dev yaml-dev lmdb-dev gobject-introspection-dev snowball-dev gperf
 wget -c https://github.com/ximion/appstream/archive/v0.12.9.tar.gz
 tar xf v0.12.9.tar.gz
 cd appstream-0.12.9
@@ -85,7 +101,7 @@ tar xf libarchive-3.3.2.tar.gz
 cd libarchive-3.3.2
 ./configure LDFLAGS='--static' --enable-bsdtar=static --disable-shared --with-zlib --without-bz2lib
 make -j$(nproc)
-ld -static -o bsdtar tar/bsdtar-bsdtar.o tar/bsdtar-cmdline.o tar/bsdtar-creation_set.o tar/bsdtar-read.o tar/bsdtar-subst.o tar/bsdtar-util.o tar/bsdtar-write.o .libs/libarchive.a .libs/libarchive_fe.a /lib/libz.a /usr/lib/crt1.o /usr/lib/libc.a
+gcc -static -o bsdtar tar/bsdtar-bsdtar.o tar/bsdtar-cmdline.o tar/bsdtar-creation_set.o tar/bsdtar-read.o tar/bsdtar-subst.o tar/bsdtar-util.o tar/bsdtar-write.o .libs/libarchive.a .libs/libarchive_fe.a /lib/libz.a
 strip bsdtar
 cd ..
 
@@ -96,21 +112,6 @@ cd ..
 exit
 EOF
 sudo umount miniroot/proc miniroot/sys miniroot/dev
-
-#############################################
-# Build static patchelf
-# https://github.com/NixOS/patchelf/issues/185
-#############################################
-
-wget https://github.com/NixOS/patchelf/archive/0.9.tar.gz # 0.10 cripples my files, puts XXXXX inside
-tar xf 0.9.tar.gz
-cd patchelf-*/
-sudo apt install autoconf
-./bootstrap.sh
-./configure --prefix=/usr
-make -j$(nproc) LDFLAGS=-static
-file src/patchelf
-cd -
 
 #############################################
 # Copy build artefacts out
