@@ -15,6 +15,22 @@ tar xf ../alpine-minirootfs-3.10.2-$ARCHITECTURE.tar.gz
 cd -
 
 #############################################
+# Build static patchelf
+# https://github.com/NixOS/patchelf/issues/185
+#############################################
+
+wget https://github.com/NixOS/patchelf/archive/0.9.tar.gz # 0.10 cripples my files, puts XXXXX inside
+tar xf 0.9.tar.gz
+cd patchelf-*/
+sudo apt install autoconf
+./bootstrap.sh
+./configure --prefix=/usr
+make -j$(nproc) LDFLAGS=-static
+file src/patchelf
+sudo cp src/patchelf miniroot/usr/bin/ # Make available inside the chroot too
+cd -
+
+#############################################
 # Prepare chroot
 #############################################
 
@@ -63,7 +79,7 @@ cd -
 # Build appstreamcli
 # But entirely unclear how to make meson build a static binary
 # but unlike with glibc it is rather easy to "bundle everything" with musl, result is 2.8 MB
-apk add glib-static meson cmake libxml2-dev yaml-dev lmdb-dev gobject-introspection-dev snowball-dev gperf patchelf
+apk add glib-static meson cmake libxml2-dev yaml-dev lmdb-dev gobject-introspection-dev snowball-dev gperf
 wget -c https://github.com/ximion/appstream/archive/v0.12.9.tar.gz
 tar xf v0.12.9.tar.gz
 cd appstream-0.12.9
@@ -96,21 +112,6 @@ cd ..
 exit
 EOF
 sudo umount miniroot/proc miniroot/sys miniroot/dev
-
-#############################################
-# Build static patchelf
-# https://github.com/NixOS/patchelf/issues/185
-#############################################
-
-wget https://github.com/NixOS/patchelf/archive/0.9.tar.gz # 0.10 cripples my files, puts XXXXX inside
-tar xf 0.9.tar.gz
-cd patchelf-*/
-sudo apt install autoconf
-./bootstrap.sh
-./configure --prefix=/usr
-make -j$(nproc) LDFLAGS=-static
-file src/patchelf
-cd -
 
 #############################################
 # Copy build artefacts out
