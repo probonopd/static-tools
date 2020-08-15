@@ -12,7 +12,7 @@ script:
   - env
   - bash -ex build.sh
   # Also build 32-bit versions in the same go
-  - if [ "$TRAVIS_ARCH" == "aarch64" ] ; then export ARCHITECTURE=armv7; else export ARCHITECTURE=x86; fi
+  - if [ "$TRAVIS_ARCH" == "aarch64" ] ; then export ARCHITECTURE=armhf; else export ARCHITECTURE=x86; fi
   - env
   - bash -ex build.sh
   
