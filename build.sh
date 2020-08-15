@@ -3,8 +3,8 @@
 #############################################
 
 wget http://dl-cdn.alpinelinux.org/alpine/v3.10/releases/$ARCHITECTURE/alpine-minirootfs-3.10.2-$ARCHITECTURE.tar.gz
-mkdir -p ./miniroot
-cd ./miniroot
+sudo mkdir -p ./miniroot
+sudo cd ./miniroot
 sudo tar xf ../alpine-minirootfs-3.10.2-$ARCHITECTURE.tar.gz
 cd -
 
