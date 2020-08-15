@@ -1,17 +1,12 @@
-if [ "$TRAVIS_ARCH" == "aarch64" ] ; then
-  export ARCHITECTURE=aarch64
-else
-  export ARCHITECTURE=x86_64
-fi
-
 #############################################
 # Download and extract minimal Alpine system
 #############################################
 
 wget http://dl-cdn.alpinelinux.org/alpine/v3.10/releases/$ARCHITECTURE/alpine-minirootfs-3.10.2-$ARCHITECTURE.tar.gz
+sudo rm -rf ./miniroot  true # Clean up from previous runs
 mkdir -p ./miniroot
 cd ./miniroot
-tar xf ../alpine-minirootfs-3.10.2-$ARCHITECTURE.tar.gz
+sudo tar xf ../alpine-minirootfs-3.10.2-$ARCHITECTURE.tar.gz
 cd -
 
 #############################################
@@ -88,7 +83,7 @@ meson ..
 ninja -v
 libs=$(ldd  ./tools/appstreamcli | cut -d " " -f 3 | sort | uniq )
 cp $libs tools/
-cp /lib/ld-musl-$ARCHITECTURE.so.1 tools/
+cp /lib/ld-musl-*.so.1 tools/
 patchelf --set-rpath '$ORIGIN' tools/appstreamcli
 strip ./tools/appstreamcli
 (cd tools/ ; tar cfvj ../appstreamcli.tar.bz2 * )
@@ -117,6 +112,10 @@ sudo umount miniroot/proc miniroot/sys miniroot/dev
 # Copy build artefacts out
 #############################################
 
+
+# Use the same architecture names as https://github.com/AppImage/AppImageKit/releases/
+if [ "$ARCHITECTURE" == "x86" ] ; then export ARCHITECTURE=i686 ; fi
+
 mkdir -p out/
 sudo find miniroot/ -type f -executable -name 'mksquashfs' -exec cp {} out/mksquashfs-$ARCHITECTURE \; 2>/dev/null
 sudo find miniroot/ -type f -executable -name 'unsquashfs' -exec cp {} out/unsquashfs-$ARCHITECTURE \; 2>/dev/null
@@ -126,3 +125,4 @@ sudo find miniroot/ -type f -executable -name 'desktop-file-validate' -exec cp {
 sudo find miniroot/ -type f -executable -name 'update-desktop-database' -exec cp {} out/update-desktop-database-$ARCHITECTURE \; 2>/dev/null
 sudo find miniroot/ -type f -name 'appstreamcli.tar.bz2' -exec cp {} out/appstreamcli-$ARCHITECTURE.tar.bz2 \; 2>/dev/null
 sudo find patchelf-*/ -type f -executable -name 'patchelf' -exec cp {} out/patchelf-$ARCHITECTURE \; 2>/dev/null
+sudo rm -rf miniroot/ patchelf-*/
