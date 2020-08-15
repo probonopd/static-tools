@@ -7,6 +7,7 @@ arch:
   - arm64
 
 script:
+  - echo -e "nameserver 8.8.8.8\nnameserver 8.8.4.4" | sudo tee -a /etc/resolv.conf # Fix 'temporary error (try again later)'? https://github.com/gliderlabs/docker-alpine/issues/386 
   # 64-bit
   - if [ "$TRAVIS_ARCH" == "aarch64" ] ; then export ARCHITECTURE=aarch64; else export ARCHITECTURE=x86_64; fi
   - env
