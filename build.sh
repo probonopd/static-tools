@@ -83,8 +83,9 @@ apk add glib-static meson cmake libxml2-dev yaml-dev lmdb-dev gobject-introspect
 wget -c https://github.com/ximion/appstream/archive/v0.12.9.tar.gz
 tar xf v0.12.9.tar.gz
 cd appstream-0.12.9
-sed -i -e 's|.*dependency\(.*)\)|\1, static : true)|g' meson.build
+sed -i -e 's|.*dependency\(.*)\)|\1, static: true)|g' meson.build
 sed -i -e 's|), static|, static|g' meson.build # FIXME: Do with above in one line
+sed -i -e "s|not found', static: true|not found'|g" meson.build # FIXME
 grep -r static meson.build # For debugging, TODO: Remove this line once it works
 sed -i -e "s|library|static_library|g" src/meson.build
 sed -i -e "s|install: true|install: true,\n\tlink_args: ['-static']|g" tools/meson.build
