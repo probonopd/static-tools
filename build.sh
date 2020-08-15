@@ -37,8 +37,8 @@ wget -c http://deb.debian.org/debian/pool/main/s/squashfs-tools/squashfs-tools_4
 tar xf squashfs-tools_4.4.orig.tar.gz
 cd squashfs-tools-4.4/squashfs-tools
 make -j$(nproc)
-gcc -static mksquashfs.o read_fs.o action.o swap.o pseudo.o compressor.o sort.o progressbar.o read_file.o info.o restore.o process_fragments.o caches-queues-lists.o gzip_wrapper.o xattr.o read_xattrs.o /usr/lib/libc.a -lm -lz -o mksquashfs
-gcc -static unsquashfs.o unsquash-1.o unsquash-2.o unsquash-3.o unsquash-4.o unsquash-123.o unsquash-34.o swap.o compressor.o unsquashfs_info.o gzip_wrapper.o read_xattrs.o unsquashfs_xattr.o /usr/lib/libc.a -lm -lz -o unsquashfs
+gcc -static mksquashfs.o read_fs.o action.o swap.o pseudo.o compressor.o sort.o progressbar.o read_file.o info.o restore.o process_fragments.o caches-queues-lists.o gzip_wrapper.o xattr.o read_xattrs.o -lm -lz -o mksquashfs
+gcc -static unsquashfs.o unsquash-1.o unsquash-2.o unsquash-3.o unsquash-4.o unsquash-123.o unsquash-34.o swap.o compressor.o unsquashfs_info.o gzip_wrapper.o read_xattrs.o unsquashfs_xattr.o -lm -lz -o unsquashfs
 strip mksquashfs unsquashfs
 cd ../../
 
@@ -54,9 +54,9 @@ autoreconf --install # https://github.com/shendurelab/LACHESIS/issues/31#issueco
 ./configure
 make -j$(nproc)	
 cd src/
-gcc -static -o desktop-file-validate keyfileutils.o validate.o validator.o -lglib-2.0 -lintl /usr/lib/libc.a
-gcc -static -o update-desktop-database  update-desktop-database.o -lglib-2.0 -lintl /usr/lib/libc.a
-gcc -static -o desktop-file-install keyfileutils.o validate.o install.o  -lglib-2.0 -lintl /usr/lib/libc.a
+gcc -static -o desktop-file-validate keyfileutils.o validate.o validator.o -lglib-2.0 -lintl
+gcc -static -o update-desktop-database  update-desktop-database.o -lglib-2.0 -lintl
+gcc -static -o desktop-file-install keyfileutils.o validate.o install.o  -lglib-2.0 -lintl
 strip desktop-file-install desktop-file-validate update-desktop-database
 cd -
 
@@ -85,7 +85,7 @@ tar xf libarchive-3.3.2.tar.gz
 cd libarchive-3.3.2
 ./configure LDFLAGS='--static' --enable-bsdtar=static --disable-shared --with-zlib --without-bz2lib
 make -j$(nproc)
-gcc -static -o bsdtar tar/bsdtar-bsdtar.o tar/bsdtar-cmdline.o tar/bsdtar-creation_set.o tar/bsdtar-read.o tar/bsdtar-subst.o tar/bsdtar-util.o tar/bsdtar-write.o .libs/libarchive.a .libs/libarchive_fe.a /lib/libz.a /usr/lib/libc.a
+gcc -static -o bsdtar tar/bsdtar-bsdtar.o tar/bsdtar-cmdline.o tar/bsdtar-creation_set.o tar/bsdtar-read.o tar/bsdtar-subst.o tar/bsdtar-util.o tar/bsdtar-write.o .libs/libarchive.a .libs/libarchive_fe.a /lib/libz.a
 strip bsdtar
 cd ..
 
