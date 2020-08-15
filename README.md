@@ -12,6 +12,7 @@ This one I did not find out yet how to build static, but bundling musl libc is s
 
 ## How to build static binaries
 
+* Build inside an Alpine Linux chroot (which gives us many dependencies from the system)
 * Build verbose (e.g., `make -j$(nproc) VERBOSE=1`)
 * Look for the gcc command that produces the executable (`-o name_of_the_executable`)
 * Replace `gcc` with `gcc -static`
