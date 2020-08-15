@@ -111,6 +111,10 @@ sudo umount miniroot/proc miniroot/sys miniroot/dev
 # Copy build artefacts out
 #############################################
 
+
+# Use the same architecture names as https://github.com/AppImage/AppImageKit/releases/
+if [ "$ARCHITECTURE" == "x86" ] ; then export ARCHITECTURE=i686 ; fi
+
 mkdir -p out/
 sudo find miniroot/ -type f -executable -name 'mksquashfs' -exec cp {} out/mksquashfs-$ARCHITECTURE \; 2>/dev/null
 sudo find miniroot/ -type f -executable -name 'unsquashfs' -exec cp {} out/unsquashfs-$ARCHITECTURE \; 2>/dev/null
