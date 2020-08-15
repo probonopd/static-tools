@@ -82,7 +82,7 @@ meson ..
 ninja -v
 libs=$(ldd  ./tools/appstreamcli | cut -d " " -f 3 | sort | uniq )
 cp $libs tools/
-cp /lib/ld-musl-$ARCHITECTURE.so.1 tools/
+cp /lib/ld-musl-*.so.1 tools/
 patchelf --set-rpath '$ORIGIN' tools/appstreamcli
 strip ./tools/appstreamcli
 (cd tools/ ; tar cfvj ../appstreamcli.tar.bz2 * )
