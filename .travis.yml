@@ -7,9 +7,15 @@ arch:
   - arm64
 
 script:
+  # 64-bit
+  - if [ "$TRAVIS_ARCH" == "aarch64" ] ; then export ARCHITECTURE=aarch64; else export ARCHITECTURE=x86_64; fi
   - env
   - bash -ex build.sh
-
+  # Also build 32-bit versions in the same go
+  - if [ "$TRAVIS_ARCH" == "aarch64" ] ; then export ARCHITECTURE=armv7; else export ARCHITECTURE=x86; fi
+  - env
+  - bash -ex build.sh
+  
 after_success:
   - wget -c https://github.com/probonopd/uploadtool/raw/master/upload.sh
   - bash upload.sh ./out/*
