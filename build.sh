@@ -27,7 +27,7 @@ sudo apt install autoconf
 ./configure --prefix=/usr
 make -j$(nproc) LDFLAGS=-static
 file src/patchelf
-sudo cp src/patchelf miniroot/usr/bin/ # Make available inside the chroot too
+sudo cp src/patchelf miniroot/bin/ # Make available inside the chroot too
 cd -
 
 #############################################
