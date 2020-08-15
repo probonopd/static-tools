@@ -83,7 +83,7 @@ apk add glib-static meson cmake libxml2-dev yaml-dev lmdb-dev gobject-introspect
 wget -c https://github.com/ximion/appstream/archive/v0.12.9.tar.gz
 tar xf v0.12.9.tar.gz
 cd appstream-0.12.9
-sed -i -e "s|install: true|c_args: ['-static','-pthread','-v']|g" tools/meson.build
+sed -i -e "s|install: true|link_args: ['-static']|g" tools/meson.build
 mkdir build && cd build
 meson ..
 ninja -v
