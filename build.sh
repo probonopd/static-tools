@@ -1,3 +1,7 @@
+#!/bin/sh
+
+set -ex
+
 #############################################
 # Download and extract minimal Alpine system
 #############################################
@@ -56,38 +60,46 @@ cd ../../
 # Build static desktop-file-utils
 apk add glib-static glib-dev
 wget -c https://www.freedesktop.org/software/desktop-file-utils/releases/desktop-file-utils-0.15.tar.gz
-tar xf desktop-file-utils-0.15.tar.gz 
+tar xf desktop-file-utils-0.15.tar.gz
 cd desktop-file-utils-0.15
 # The next 2 lines are a workaround for: checking build system type... ./config.guess: unable to guess system type
 wget 'http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD' -O config.guess
 wget 'http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD' -O config.sub
 autoreconf --install # https://github.com/shendurelab/LACHESIS/issues/31#issuecomment-283963819
 ./configure
-make -j$(nproc)	
+make -j$(nproc)
 cd src/
 gcc -static -o desktop-file-validate keyfileutils.o validate.o validator.o -lglib-2.0 -lintl
 gcc -static -o update-desktop-database  update-desktop-database.o -lglib-2.0 -lintl
 gcc -static -o desktop-file-install keyfileutils.o validate.o install.o  -lglib-2.0 -lintl
 strip desktop-file-install desktop-file-validate update-desktop-database
-cd -
+cd ../..
 
 # Build appstreamcli
-# But entirely unclear how to make meson build a static binary
-# but unlike with glibc it is rather easy to "bundle everything" with musl, result is 2.8 MB
-apk add glib-static meson cmake libxml2-dev yaml-dev lmdb-dev gobject-introspection-dev snowball-dev gperf
+apk add glib-static meson cmake libxml2-dev yaml-dev gobject-introspection-dev snowball-dev gperf
+# Compile liblmdb from source as Alpine only ship it as a .so
+wget https://git.openldap.org/openldap/openldap/-/archive/LMDB_0.9.29/openldap-LMDB_0.9.29.tar.gz
+tar xf openldap-LMDB_0.9.29.tar.gz
+cd openldap-LMDB_0.9.29/libraries/liblmdb
+make liblmdb.a
+sudo install -D -m 644 liblmdb.a /usr/local/lib/liblmdb.a
+sudo install -D -m 644 lmdb.h /usr/local/include/lmdb.h
+cd -
 wget -c https://github.com/ximion/appstream/archive/v0.12.9.tar.gz
 tar xf v0.12.9.tar.gz
 cd appstream-0.12.9
-mkdir build && cd build
-meson ..
-ninja -v
-libs=$(ldd  ./tools/appstreamcli | cut -d " " -f 3 | sort | uniq )
-cp $libs tools/
-cp /lib/ld-musl-*.so.1 tools/
-patchelf --set-rpath '$ORIGIN' tools/appstreamcli
-strip ./tools/appstreamcli
-(cd tools/ ; tar cfvj ../appstreamcli.tar.bz2 * )
-cd ../../
+# Ask for static dependencies
+sed -i -E -e "s|(dependency\('.*')|\1, static: true|g" meson.build
+# Disable po, docs and tests
+sed -i -e "s|subdir('po/')||" meson.build
+sed -i -e "s|subdir('docs/')||" meson.build
+sed -i -e "s|subdir('tests/')||" meson.build
+# -no-pie is required to statically link to libc
+CFLAGS=-no-pie LDFLAGS=-static meson setup build --buildtype=release --default-library=static --prefix="$(pwd)/prefix" --strip -Db_lto=true -Db_ndebug=if-release -Dstemming=false -Dgir=false -Dapidocs=false
+# Install in a staging enviroment
+meson install -C build
+file prefix/bin/appstreamcli
+cd -
 
 # Build static bsdtar
 apk add zlib-dev bzip2-dev # What happened to zlib-static?
@@ -114,15 +126,15 @@ sudo umount miniroot/proc miniroot/sys miniroot/dev
 
 
 # Use the same architecture names as https://github.com/AppImage/AppImageKit/releases/
-if [ "$ARCHITECTURE" == "x86" ] ; then export ARCHITECTURE=i686 ; fi
+if [ "$ARCHITECTURE" = "x86" ] ; then export ARCHITECTURE=i686 ; fi
 
-mkdir -p out/
+mkdir out/
 sudo find miniroot/ -type f -executable -name 'mksquashfs' -exec cp {} out/mksquashfs-$ARCHITECTURE \; 2>/dev/null
 sudo find miniroot/ -type f -executable -name 'unsquashfs' -exec cp {} out/unsquashfs-$ARCHITECTURE \; 2>/dev/null
 sudo find miniroot/ -type f -executable -name 'bsdtar' -exec cp {} out/bsdtar-$ARCHITECTURE \; 2>/dev/null
 sudo find miniroot/ -type f -executable -name 'desktop-file-install' -exec cp {} out/desktop-file-install-$ARCHITECTURE \; 2>/dev/null
 sudo find miniroot/ -type f -executable -name 'desktop-file-validate' -exec cp {} out/desktop-file-validate-$ARCHITECTURE \; 2>/dev/null
 sudo find miniroot/ -type f -executable -name 'update-desktop-database' -exec cp {} out/update-desktop-database-$ARCHITECTURE \; 2>/dev/null
-sudo find miniroot/ -type f -name 'appstreamcli.tar.bz2' -exec cp {} out/appstreamcli-$ARCHITECTURE.tar.bz2 \; 2>/dev/null
+sudo cp miniroot/appstream-0.12.9/prefix/bin/appstreamcli out/appstreamcli-$ARCHITECTURE
 sudo find patchelf-*/ -type f -executable -name 'patchelf' -exec cp {} out/patchelf-$ARCHITECTURE \; 2>/dev/null
 sudo rm -rf miniroot/ patchelf-*/
