@@ -4,12 +4,7 @@
 
 name: build
 
-on: 
-  push:
-    branches-ignore: continuous
-    tags-ignore: continuous
-  pull_request:
-    branches-ignore: continuous
+on: [push, pull_request]
 
 # This ensures that jobs get canceled when force-pushing
 concurrency:
@@ -29,16 +24,33 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        arch: [ x86, x86_64 ]
+        include:
+        - { qemu_arch: x86,     appimage_arch: x86 }
+        - { qemu_arch: x86_64,  appimage_arch: x86_64 }
+        - { qemu_arch: armv7,   appimage_arch: armhf }
+        - { qemu_arch: aarch64, appimage_arch: aarch64 }
 
     steps:
     - name: Checkout
       uses: actions/checkout@v3
 
     - name: Build
+      if: contains(matrix.qemu_arch, 'x86')
       env:
-        ARCHITECTURE: ${{ matrix.arch }}
-      run: ./build.sh
+        ARCHITECTURE: ${{ matrix.appimage_arch }}
+      run: ./chroot_build.sh
+
+    - name: Build (qemu)
+      if: ${{ !contains(matrix.qemu_arch, 'x86') }}
+      uses: uraimo/run-on-arch-action@v2
+      with:
+        arch: ${{ matrix.qemu_arch }}
+        distro: alpine_latest
+        env: |
+          ARCHITECTURE: ${{ matrix.appimage_arch }}
+        dockerRunArgs: |
+          --volume "${PWD}/out:/out"
+        run: ./build.sh
 
     - name: Upload to releases
       if: github.event_name != 'pull_request'
