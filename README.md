@@ -1,4 +1,4 @@
-# static-tools [![Build Status](https://travis-ci.com/probonopd/static-tools.svg?branch=master)](https://travis-ci.com/probonopd/static-tools)
+# static-tools ![GitHub Actions](https://github.com/probonopd/static-tools/actions/workflows/build.yaml/badge.svg)
 
 Building static binaries of some tools using an [Alpine Linux](https://alpinelinux.org/) chroot with [musl libc](https://www.musl-libc.org/):
 
