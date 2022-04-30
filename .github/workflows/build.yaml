@@ -4,7 +4,12 @@
 
 name: build
 
-on: [push, pull_request]
+on: 
+  push:
+    branches-ignore: continuous
+    tags-ignore: continuous
+  pull_request:
+    branches-ignore: continuous
 
 # This ensures that jobs get canceled when force-pushing
 concurrency:
@@ -34,3 +39,10 @@ jobs:
       env:
         ARCHITECTURE: ${{ matrix.arch }}
       run: ./build.sh
+
+    - name: Upload to releases
+      if: github.event_name != 'pull_request'
+      uses: softprops/action-gh-release@v1
+      with:
+        files: out/*
+        tag_name: continuous
