@@ -1,0 +1,36 @@
+# SPDX-FileCopyrightText: 2022 Andrea Pappacoda <andrea@pappacoda.it>
+#
+# SPDX-License-Identifier: MIT
+
+name: build
+
+on: [push, pull_request]
+
+# This ensures that jobs get canceled when force-pushing
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+# The default Debian shell (dash) is faster than bash at running scripts,
+# and using bash when it is not needed doesn't make sense.
+defaults:
+  run:
+    shell: sh
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [ x86, x86_64 ]
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Build
+      env:
+        ARCHITECTURE: ${{ matrix.arch }}
+      run: ./build.sh
