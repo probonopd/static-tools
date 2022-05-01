@@ -18,6 +18,7 @@ cd squashfuse-*/
 ./autogen.sh
 ./configure CFLAGS=-no-pie LDFLAGS=-static
 make -j$(nproc)
+make install
 cd ..
 
 # Build static AppImage runtime
