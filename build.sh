@@ -16,7 +16,8 @@ wget -c -q "https://github.com/vasi/squashfuse/releases/download/0.1.104/squashf
 tar xf squashfuse-*.tar.gz
 cd squashfuse-*/
 ./autogen.sh
-./configure CFLAGS=-no-pie LDFLAGS=-static
+./configure --help
+./configure CFLAGS=-no-pie LDFLAGS=-static --disable-high-level
 make -j$(nproc)
 make install
 cd ..
