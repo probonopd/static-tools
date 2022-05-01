@@ -21,7 +21,7 @@ cd squashfuse-*/
 make -j$(nproc)
 make install
 /usr/bin/install -c -m 644 *.h '/usr/local/include/squashfuse' # ll.h
-cd ..
+cd -
 
 # Build static AppImage runtime
 cd src/runtime
