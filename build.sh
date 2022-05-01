@@ -11,7 +11,7 @@ apk update
 apk add alpine-sdk util-linux strace file zlib-dev zlib-static autoconf automake libtool
 
 # Build static squashfuse
-apk add glib-static glib-dev fuse-static zstd-static # fuse3-static
+apk add glib-dev  glib-static fuse-dev fuse-static zstd-dev zstd-static # fuse3-static fuse3-dev
 wget -c -q "https://github.com/vasi/squashfuse/releases/download/0.1.104/squashfuse-0.1.104.tar.gz"
 tar xf squashfuse-*.tar.gz
 cd squashfuse-*/
