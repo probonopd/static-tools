@@ -5,9 +5,6 @@ Building static binaries of some tools using an [Alpine Linux](https://alpinelin
 * `bsdtar` (from libarchive)
 * `mksquashfs`, `unsquashfs` (from squashfs-tools)
 * `desktop-file-install`, `desktop-file-validate`, `update-desktop-database` (from desktop-file-utils)
-
-This one I did not find out yet how to build static, but bundling musl libc is so much easier (and smaller) than bundling glibc:
-
 * `appstreamcli` (from AppStream)
 
 ## How to build static binaries
