@@ -30,7 +30,7 @@ wget -c -q "https://raw.githubusercontent.com/eth-cscs/spack-batteries-included/
 wget -c -q "https://raw.githubusercontent.com/eth-cscs/spack-batteries-included/master/build/5_runtime/Makefile"
 sed -i -e 's|-I$(CURDIR)/view/fuse2/include/fuse|/usr/include/fuse|g' Makefile
 sed -i -e 's|-I$(CURDIR)/view/fuse3/include/fuse|/usr/include/fuse3|g' Makefile
-make -j$(nproc)
+make runtime-fuse2 -j$(nproc)
 cd -
 
 # Build static zsyncmake
