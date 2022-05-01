@@ -1058,9 +1058,9 @@ int main(int argc, char *argv[]) {
             setenv( "OWD", cwd, 1 );
         }
 
-        char filename[mount_dir_size + 8]; /* enough for mount_dir + "/spack" */
+        char filename[mount_dir_size + 8]; /* enough for mount_dir + "/AppRun" */
         strcpy (filename, mount_dir);
-        strcat (filename, "/spack");
+        strcat (filename, "/AppRun");
 
         /* TODO: Find a way to get the exit status and/or output of this */
         execv (filename, real_argv);
