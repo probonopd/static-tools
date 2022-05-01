@@ -10,6 +10,16 @@ fi
 apk update
 apk add alpine-sdk util-linux strace file zlib-dev zlib-static autoconf automake libtool
 
+# Build static zsyncmake
+wget http://zsync.moria.org.uk/download/zsync-0.6.2.tar.bz2
+tar xf zsync-*.tar.bz2
+cd zsync-*/
+./configure CFLAGS=-no-pie LDFLAGS=-static
+make -j$(nproc)
+file zsyncmake
+strip zsyncmake
+cd -
+
 # Build static squashfs-tools
 wget -O squashfs-tools.tar.gz https://github.com/plougher/squashfs-tools/archive/refs/tags/4.5.1.tar.gz
 tar xf squashfs-tools.tar.gz
@@ -75,6 +85,7 @@ strip bsdtar
 cd -
 
 mkdir -p out
+cp zsync-*/zsyncmake out/zsyncmake-$ARCHITECTURE
 cp squashfs-tools-*/squashfs-tools/mksquashfs out/mksquashfs-$ARCHITECTURE
 cp squashfs-tools-*/squashfs-tools/unsquashfs out/unsquashfs-$ARCHITECTURE
 cp libarchive-*/bsdtar out/bsdtar-$ARCHITECTURE
