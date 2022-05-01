@@ -46,7 +46,33 @@ extern dev_t sqfs_makedev(int maj, int min);
 extern int sqfs_opt_proc(void *data, const char *arg, int key,
 	struct fuse_args *outargs);
 
+// FIXME: Why are these not covered by '#include <squashfuse/ll.h>' above?
 extern void sqfs_ll_op_getattr(fuse_req_t req, fuse_ino_t ino, struct fuse_file_info *fi);
+extern void sqfs_ll_op_opendir(fuse_req_t req, fuse_ino_t ino, struct fuse_file_info *fi);
+extern void sqfs_ll_op_releasedir(fuse_req_t req, fuse_ino_t ino, struct fuse_file_info *fi);
+extern void sqfs_ll_op_readdir(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off, struct fuse_file_info *fi);
+extern void sqfs_ll_op_lookup(fuse_req_t req, fuse_ino_t parent, const char *name);
+extern void sqfs_ll_op_open(fuse_req_t req, fuse_ino_t ino, struct fuse_file_info *fi);
+extern void sqfs_ll_op_release(fuse_req_t req, fuse_ino_t ino, struct fuse_file_info *fi);
+extern void sqfs_ll_op_read(fuse_req_t req, fuse_ino_t ino, size_t size, off_t off, struct fuse_file_info *fi);
+extern void sqfs_ll_op_readlink(fuse_req_t req, fuse_ino_t ino);
+extern void sqfs_ll_op_listxattr(fuse_req_t req, fuse_ino_t ino, size_t size);
+extern void sqfs_ll_op_getxattr(fuse_req_t req, fuse_ino_t ino,
+		const char *name, size_t size
+#ifdef FUSE_XATTR_POSITION
+		, uint32_t position
+#endif
+		)
+extern void sqfs_ll_op_forget(fuse_req_t req, fuse_ino_t ino, unsigned long nlookup);
+extern void stfs_ll_op_statfs(fuse_req_t req, fuse_ino_t ino);
+extern void sqfs_ll_op_create(fuse_req_t req, fuse_ino_t parent, const char *name, mode_t mode, struct fuse_file_info *fi);
+extern typedef struct {
+	int fd;
+	struct fuse_session *session;
+#if FUSE_USE_VERSION < 30
+	struct fuse_chan *ch;
+#endif
+} sqfs_ll_chan;
 
 #include <limits.h>
 #include <stdlib.h>
