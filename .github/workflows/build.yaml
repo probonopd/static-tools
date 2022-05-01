@@ -53,7 +53,7 @@ jobs:
         run: ./build.sh
 
     - name: Upload to releases
-      if: github.event_name != 'pull_request'
+      if: github.event_name != 'pull_request' && github.ref_name == 'master'
       uses: softprops/action-gh-release@v1
       with:
         files: out/*
