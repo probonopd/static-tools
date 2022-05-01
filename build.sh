@@ -24,7 +24,12 @@ make install
 cd -
 
 # Build static AppImage runtime
+# cd src/runtime # FIXME: We are "somewhere" in a container, so we can't access our own files?
+# FIXME: Crude workaround
+mkdir -p src/runtime
 cd src/runtime
+wget -c -q https://raw.githubusercontent.com/probonopd/static-tools/runtime/src/runtime/runtime.c
+wget -c -q https://raw.githubusercontent.com/probonopd/static-tools/runtime/src/runtime/Makefile
 make runtime-fuse2 -j$(nproc)
 cd -
 
