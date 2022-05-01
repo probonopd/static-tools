@@ -50,6 +50,7 @@ jobs:
           ARCHITECTURE: ${{ matrix.appimage_arch }}
         dockerRunArgs: |
           --volume "${PWD}/out:/out"
+          --volume "${PWD}/src:/src"
         run: ./build.sh
 
     - name: Upload to releases
