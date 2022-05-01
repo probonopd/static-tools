@@ -58,7 +58,7 @@ extern int sqfs_opt_proc(void *data, const char *arg, int key,
 #include <unistd.h>
 #include <pthread.h>
 #include <errno.h>
-#include <wait.h>
+#include <sys/wait.h>
 #include <fnmatch.h>
 #include <sys/mman.h>
 
