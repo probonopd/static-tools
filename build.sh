@@ -17,9 +17,10 @@ tar xf squashfuse-*.tar.gz
 cd squashfuse-*/
 ./autogen.sh
 ./configure --help
-./configure CFLAGS=-no-pie LDFLAGS=-static --disable-high-level
+./configure CFLAGS=-no-pie LDFLAGS=-static
 make -j$(nproc)
 make install
+/usr/bin/install -c -m 644 *.h '/usr/local/include/squashfuse' # ll.h
 cd ..
 
 # Build static AppImage runtime
