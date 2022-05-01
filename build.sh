@@ -15,7 +15,7 @@ wget http://zsync.moria.org.uk/download/zsync-0.6.2.tar.bz2
 tar xf zsync-*.tar.bz2
 cd zsync-*/
 find . -type f -exec sed -i -e 's|off_t|size_t|g' {} \;
-./configure CFLAGS=-no-pie LDFLAGS=-static --build=$ARCHITECTURE-unknown-linux-musl
+./configure CFLAGS=-no-pie LDFLAGS=-static --build=$(arch)-unknown-linux-musl
 make -j$(nproc)
 file zsyncmake
 strip zsyncmake
