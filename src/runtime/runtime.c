@@ -39,6 +39,7 @@ typedef struct {
 
 #include <squashfuse/squashfuse.h>
 #include <squashfuse/squashfs_fs.h>
+#include <squashfuse/fuseprivate.h>
 #include <squashfuse/ll.h>
 
 extern dev_t sqfs_makedev(int maj, int min);
