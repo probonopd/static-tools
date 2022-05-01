@@ -46,6 +46,8 @@ extern dev_t sqfs_makedev(int maj, int min);
 extern int sqfs_opt_proc(void *data, const char *arg, int key,
 	struct fuse_args *outargs);
 
+extern void sqfs_ll_op_getattr(fuse_req_t req, fuse_ino_t ino, struct fuse_file_info *fi);
+
 #include <limits.h>
 #include <stdlib.h>
 #include <sys/types.h>
