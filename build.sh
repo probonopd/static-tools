@@ -11,6 +11,7 @@ apk update
 apk add alpine-sdk util-linux strace file zlib-dev zlib-static autoconf automake libtool
 
 # Build static squashfuse
+apk add glib-static glib-dev fuse-static fuse3-static zstd-static
 wget -c -q "https://github.com/vasi/squashfuse/releases/download/0.1.104/squashfuse-0.1.104.tar.gz"
 tar xf squashfuse-*.tar.bz2
 cd squashfuse-*/
@@ -22,7 +23,6 @@ cd ..
 # Build static AppImage runtime
 mkdir runtime
 cd runtime
-apk add glib-static glib-dev fuse fuse3
 wget -c -q "https://raw.githubusercontent.com/eth-cscs/spack-batteries-included/master/build/5_runtime/runtime.c"
 wget -c -q "https://raw.githubusercontent.com/eth-cscs/spack-batteries-included/master/build/5_runtime/Makefile"
 make -j$(nproc)
