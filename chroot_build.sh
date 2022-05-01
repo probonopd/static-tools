@@ -33,6 +33,7 @@ sudo umount miniroot/proc miniroot/sys miniroot/dev
 if [ "$ARCHITECTURE" = "x86" ] ; then ARCHITECTURE=i686 ; fi
 
 mkdir out/
+sudo find miniroot/ -type f -executable -name 'zsyncmake' -exec cp {} out/zsyncmake-$ARCHITECTURE \;
 sudo find miniroot/ -type f -executable -name 'mksquashfs' -exec cp {} out/mksquashfs-$ARCHITECTURE \;
 sudo find miniroot/ -type f -executable -name 'unsquashfs' -exec cp {} out/unsquashfs-$ARCHITECTURE \;
 sudo find miniroot/ -type f -executable -name 'bsdtar' -exec cp {} out/bsdtar-$ARCHITECTURE \;
