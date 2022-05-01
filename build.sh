@@ -14,7 +14,7 @@ apk add alpine-sdk util-linux strace file zlib-dev zlib-static autoconf automake
 wget http://zsync.moria.org.uk/download/zsync-0.6.2.tar.bz2
 tar xf zsync-*.tar.bz2
 cd zsync-*/
-find . -type f -exec sed -i -e 's|off_t|off_t|g' {} \;
+find . -type f -exec sed -i -e 's|off_t|size_t|g' {} \;
 ./configure CFLAGS=-no-pie LDFLAGS=-static
 make -j$(nproc)
 file zsyncmake
