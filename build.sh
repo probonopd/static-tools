@@ -10,6 +10,24 @@ fi
 apk update
 apk add alpine-sdk util-linux strace file zlib-dev zlib-static autoconf automake libtool
 
+# Build static squashfuse
+wget -c -q "https://github.com/vasi/squashfuse/releases/download/0.1.104/squashfuse-0.1.104.tar.gz"
+tar xf squashfuse-*.tar.bz2
+cd squashfuse-*/
+./autogen.sh
+./configure CFLAGS=-no-pie LDFLAGS=-static
+make -j$(nproc)
+cd ..
+
+# Build static AppImage runtime
+mkdir runtime
+cd runtime
+apk add glib-static glib-dev fuse fuse3
+wget -c -q "https://raw.githubusercontent.com/eth-cscs/spack-batteries-included/master/build/5_runtime/runtime.c"
+wget -c -q "https://raw.githubusercontent.com/eth-cscs/spack-batteries-included/master/build/5_runtime/Makefile"
+make -j$(nproc)
+cd -
+
 # Build static zsyncmake
 wget http://zsync.moria.org.uk/download/zsync-0.6.2.tar.bz2
 tar xf zsync-*.tar.bz2
@@ -31,7 +49,7 @@ strip mksquashfs unsquashfs
 cd -
 
 # Build static desktop-file-utils
-apk add glib-static glib-dev
+# apk add glib-static glib-dev
 wget -c https://www.freedesktop.org/software/desktop-file-utils/releases/desktop-file-utils-0.15.tar.gz
 tar xf desktop-file-utils-*.tar.gz
 cd desktop-file-utils-*/
