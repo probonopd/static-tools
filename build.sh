@@ -27,7 +27,9 @@ cd -
 # cd src/runtime # FIXME: We are "somewhere" in a container, so we can't access our own files?
 # FIXME: Crude workaround
 # mkdir -p src/runtime
-cp -r /src .  # We are inside a Docker container; /src was mounted there as a Docker volume
+if [ -e "/src" ] ; then
+  cp -r /src .  # We are inside a Docker container; /src was mounted there as a Docker volume
+fi
 cd src/runtime
 # wget -c -q https://raw.githubusercontent.com/probonopd/static-tools/runtime/src/runtime/runtime.c
 # wget -c -q https://raw.githubusercontent.com/probonopd/static-tools/runtime/src/runtime/Makefile
