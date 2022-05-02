@@ -24,6 +24,8 @@ sudo cp -p /etc/resolv.conf miniroot/etc/
 sudo chroot miniroot /bin/sh -ex <build.sh
 sudo umount miniroot/proc miniroot/sys miniroot/dev
 
+sudo cp -r ./src miniroot/src
+
 #############################################
 # Copy build artefacts out
 #############################################
