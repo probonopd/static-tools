@@ -15,3 +15,4 @@ Building static binaries of some tools using an [Alpine Linux](https://alpinelin
 * Replace `gcc` with `gcc -static`
 * Remove all `-W...`
 * Remove `-lpthread`
+* Some software can be configured like this: `./configure CFLAGS=-no-pie LDFLAGS=-static`
