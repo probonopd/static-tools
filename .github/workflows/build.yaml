@@ -56,10 +56,10 @@ jobs:
           --volume "${PWD}/src:/src"
         run: |
              ./build.sh
-             echo "artifactName=$GITHUB_RUN_NUMBER_$(date +%Y-%m-%d)-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+             # echo "artifactName=$GITHUB_RUN_NUMBER_$(date +%Y-%m-%d)-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
     - uses: actions/upload-artifact@v3
       with:
-        name: ${{ env.artifactName }} # Exported above
+        name: artifacts
         path: ./out/*
 
     - name: Upload to releases
