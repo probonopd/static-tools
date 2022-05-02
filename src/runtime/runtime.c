@@ -37,9 +37,14 @@ typedef struct {
     unsigned int idle_timeout_secs;
 } sqfs_opts;
 
-#include <squashfuse/squashfuse.h>
-#include <squashfuse/squashfs_fs.h>
+// #include <squashfuse/squashfuse.h>
+// #include <squashfuse/squashfs_fs.h>
+// #include <squashfuse/ll.h>
+
+// Like in https://github.com/vasi/squashfuse/blob/master/ll_main.c
 #include <squashfuse/ll.h>
+#include <squashfuse/fuseprivate.h>
+#include <squashfuse/nonstd.h>
 
 extern dev_t sqfs_makedev(int maj, int min);
 
