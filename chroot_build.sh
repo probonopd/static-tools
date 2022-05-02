@@ -17,19 +17,28 @@ cd -
 # Prepare chroot
 #############################################
 
+sudo cp -r ./src miniroot/src
+
 sudo mount -o bind /dev miniroot/dev
 sudo mount -t proc none miniroot/proc
 sudo mount -t sysfs none miniroot/sys
 sudo cp -p /etc/resolv.conf miniroot/etc/
-sudo chroot miniroot /bin/sh -ex <build.sh
-sudo umount miniroot/proc miniroot/sys miniroot/dev
 
-sudo cp -r ./src miniroot/src
+#############################################
+# Run build.sh in chroot
+#############################################
+
+sudo chroot miniroot /bin/sh -ex <build.sh
+
+#############################################
+# Clean up chroot
+#############################################
+
+sudo umount miniroot/proc miniroot/sys miniroot/dev
 
 #############################################
 # Copy build artefacts out
 #############################################
-
 
 # Use the same architecture names as https://github.com/AppImage/AppImageKit/releases/
 if [ "$ARCHITECTURE" = "x86" ] ; then ARCHITECTURE=i686 ; fi
