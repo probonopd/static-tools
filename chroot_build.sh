@@ -17,22 +17,34 @@ cd -
 # Prepare chroot
 #############################################
 
+sudo cp -r ./src miniroot/src
+
 sudo mount -o bind /dev miniroot/dev
 sudo mount -t proc none miniroot/proc
 sudo mount -t sysfs none miniroot/sys
 sudo cp -p /etc/resolv.conf miniroot/etc/
+
+#############################################
+# Run build.sh in chroot
+#############################################
+
 sudo chroot miniroot /bin/sh -ex <build.sh
+
+#############################################
+# Clean up chroot
+#############################################
+
 sudo umount miniroot/proc miniroot/sys miniroot/dev
 
 #############################################
 # Copy build artefacts out
 #############################################
 
-
 # Use the same architecture names as https://github.com/AppImage/AppImageKit/releases/
 if [ "$ARCHITECTURE" = "x86" ] ; then ARCHITECTURE=i686 ; fi
 
 mkdir out/
+sudo find miniroot/ -type f -executable -name 'runtime-fuse2' -exec cp {} out/runtime-fuse2-$ARCHITECTURE \;
 sudo find miniroot/ -type f -executable -name 'zsyncmake' -exec cp {} out/zsyncmake-$ARCHITECTURE \;
 sudo find miniroot/ -type f -executable -name 'mksquashfs' -exec cp {} out/mksquashfs-$ARCHITECTURE \;
 sudo find miniroot/ -type f -executable -name 'unsquashfs' -exec cp {} out/unsquashfs-$ARCHITECTURE \;

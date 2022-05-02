@@ -10,6 +10,30 @@ fi
 apk update
 apk add alpine-sdk util-linux strace file zlib-dev zlib-static autoconf automake libtool
 
+# Build static squashfuse
+apk add glib-dev  glib-static fuse-dev fuse-static zstd-dev zstd-static # fuse3-static fuse3-dev
+wget -c -q "https://github.com/vasi/squashfuse/archive/e51978c.tar.gz"
+tar xf e51978c.tar.gz
+cd squashfuse-*/
+./autogen.sh
+./configure --help
+./configure CFLAGS=-no-pie LDFLAGS=-static
+make -j$(nproc)
+make install
+/usr/bin/install -c -m 644 *.h '/usr/local/include/squashfuse' # ll.h
+cd -
+
+readlink -f .
+ls
+
+# Build static AppImage runtime
+cd src/runtime
+make runtime-fuse2 -j$(nproc)
+file runtime-fuse2
+strip runtime-fuse2
+ls -lh runtime-fuse2
+cd -
+
 # Build static zsyncmake
 wget http://zsync.moria.org.uk/download/zsync-0.6.2.tar.bz2
 tar xf zsync-*.tar.bz2
@@ -31,7 +55,7 @@ strip mksquashfs unsquashfs
 cd -
 
 # Build static desktop-file-utils
-apk add glib-static glib-dev
+# apk add glib-static glib-dev
 wget -c https://www.freedesktop.org/software/desktop-file-utils/releases/desktop-file-utils-0.15.tar.gz
 tar xf desktop-file-utils-*.tar.gz
 cd desktop-file-utils-*/
@@ -86,6 +110,7 @@ strip bsdtar
 cd -
 
 mkdir -p out
+cp src/runtime/runtime-fuse2 out/runtime-fuse2-$ARCHITECTURE
 cp zsync-*/zsyncmake out/zsyncmake-$ARCHITECTURE
 cp squashfs-tools-*/squashfs-tools/mksquashfs out/mksquashfs-$ARCHITECTURE
 cp squashfs-tools-*/squashfs-tools/unsquashfs out/unsquashfs-$ARCHITECTURE
