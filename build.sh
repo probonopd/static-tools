@@ -23,12 +23,13 @@ make install
 /usr/bin/install -c -m 644 *.h '/usr/local/include/squashfuse' # ll.h
 cd -
 
+readlink -f .
+ls
+
 # Build static AppImage runtime
-# cd src/runtime # FIXME: We are "somewhere" in a container, so we can't access our own files?
-# FIXME: Crude workaround
 # mkdir -p src/runtime
-if [ -e "/src" ] ; then
-  cp -r /src .  # We are inside a Docker container; /src was mounted there as a Docker volume
+if [ -e "/src/runtime" ] ; then
+  cp -r /src src  # We are inside a Docker container; /src was mounted there as a Docker volume
 fi
 cd src/runtime
 # wget -c -q https://raw.githubusercontent.com/probonopd/static-tools/runtime/src/runtime/runtime.c
