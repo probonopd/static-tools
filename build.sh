@@ -26,10 +26,11 @@ cd -
 # Build static AppImage runtime
 # cd src/runtime # FIXME: We are "somewhere" in a container, so we can't access our own files?
 # FIXME: Crude workaround
-mkdir -p src/runtime
+# mkdir -p src/runtime
+cp -r /src .  # We are inside a Docker container; /src was mounted there as a Docker volume
 cd src/runtime
-wget -c -q https://raw.githubusercontent.com/probonopd/static-tools/runtime/src/runtime/runtime.c
-wget -c -q https://raw.githubusercontent.com/probonopd/static-tools/runtime/src/runtime/Makefile
+# wget -c -q https://raw.githubusercontent.com/probonopd/static-tools/runtime/src/runtime/runtime.c
+# wget -c -q https://raw.githubusercontent.com/probonopd/static-tools/runtime/src/runtime/Makefile
 make runtime-fuse2 -j$(nproc)
 file runtime-fuse2
 strip runtime-fuse2
