@@ -11,6 +11,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
 # The default Debian shell (dash) is faster than bash at running scripts,
 # and using bash when it is not needed doesn't make sense.
 defaults:
@@ -51,7 +54,13 @@ jobs:
         dockerRunArgs: |
           --volume "${PWD}/out:/out"
           --volume "${PWD}/src:/src"
-        run: ./build.sh
+        run: |
+             ./build.sh
+             echo "artifactName=$GITHUB_RUN_NUMBER_$(date +%Y-%m-%d)-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+    - uses: actions/upload-artifact@v3
+      with:
+        name: ${{ env.artifactName }} # Exported above
+        path: ./out/*
 
     - name: Upload to releases
       if: github.event_name != 'pull_request' && github.ref_name == 'master'
@@ -59,3 +68,4 @@ jobs:
       with:
         files: out/*
         tag_name: continuous
+
