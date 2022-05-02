@@ -43,7 +43,7 @@ typedef struct {
 
 // Like in https://github.com/vasi/squashfuse/blob/master/ll_main.c
 #include <squashfuse/ll.h>
-// #include <squashfuse/fuseprivate.h>
+#include <squashfuse/fuseprivate.h>
 #include <squashfuse/nonstd.h>
 
 extern dev_t sqfs_makedev(int maj, int min);
