@@ -114,6 +114,7 @@ strip bsdtar
 cd -
 
 mkdir -p out
+cp src/runtime/runtime-fuse2 out/runtime-fuse2-$ARCHITECTURE
 cp zsync-*/zsyncmake out/zsyncmake-$ARCHITECTURE
 cp squashfs-tools-*/squashfs-tools/mksquashfs out/mksquashfs-$ARCHITECTURE
 cp squashfs-tools-*/squashfs-tools/unsquashfs out/unsquashfs-$ARCHITECTURE
