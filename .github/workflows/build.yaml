@@ -48,7 +48,7 @@ jobs:
       uses: uraimo/run-on-arch-action@v2
       with:
         arch: ${{ matrix.qemu_arch }}
-        distro: alpine_edge
+        distro: alpine_latest
         env: |
           ARCHITECTURE: ${{ matrix.appimage_arch }}
         dockerRunArgs: |
