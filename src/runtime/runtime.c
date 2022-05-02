@@ -897,7 +897,7 @@ int main(int argc, char *argv[]) {
 
     /* Just print the offset and then exit */
     if(arg && strcmp(arg,"squashfs-offset")==0) {
-        printf("%lu\n", fs_offset);
+        printf("%zu\n", fs_offset);
         exit(0);
     }
 
@@ -977,7 +977,7 @@ int main(int argc, char *argv[]) {
         char *dir = realpath(appimage_path, NULL );
 
         char options[100];
-        sprintf(options, "ro,offset=%lu", fs_offset);
+        sprintf(options, "ro,offset=%zu", fs_offset);
 
         child_argv[0] = dir;
         child_argv[1] = "-o";
