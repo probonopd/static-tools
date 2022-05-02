@@ -29,14 +29,6 @@
 
 #include <stddef.h>
 
-typedef struct {
-    char *progname;
-    const char *image;
-    int mountpoint;
-    size_t offset;
-    unsigned int idle_timeout_secs;
-} sqfs_opts;
-
 // #include <squashfuse/squashfuse.h>
 // #include <squashfuse/squashfs_fs.h>
 // #include <squashfuse/ll.h>
