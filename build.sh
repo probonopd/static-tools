@@ -27,13 +27,7 @@ readlink -f .
 ls
 
 # Build static AppImage runtime
-# mkdir -p src/runtime
-if [ -e "/src/runtime" ] ; then
-  cp -r /src src  # We are inside a Docker container; /src was mounted there as a Docker volume
-fi
 cd src/runtime
-# wget -c -q https://raw.githubusercontent.com/probonopd/static-tools/runtime/src/runtime/runtime.c
-# wget -c -q https://raw.githubusercontent.com/probonopd/static-tools/runtime/src/runtime/Makefile
 make runtime-fuse2 -j$(nproc)
 file runtime-fuse2
 strip runtime-fuse2
