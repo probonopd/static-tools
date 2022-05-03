@@ -11,7 +11,7 @@ apk update
 apk add alpine-sdk util-linux strace file zlib-dev zlib-static autoconf automake libtool
 
 # Build static squashfuse
-apk add glib-dev  glib-static fuse-dev fuse-static zstd-dev zstd-static # fuse3-static fuse3-dev
+apk add fuse-dev fuse-static zstd-dev zstd-static # fuse3-static fuse3-dev
 wget -c -q "https://github.com/vasi/squashfuse/archive/e51978c.tar.gz"
 tar xf e51978c.tar.gz
 cd squashfuse-*/
@@ -35,6 +35,7 @@ ls -lh runtime-fuse2
 cd -
 
 # Build static zsyncmake
+apk add glib-dev glib-static
 wget http://zsync.moria.org.uk/download/zsync-0.6.2.tar.bz2
 tar xf zsync-*.tar.bz2
 cd zsync-*/
