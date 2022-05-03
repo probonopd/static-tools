@@ -60,6 +60,7 @@ strip zsyncmake
 cd -
 
 # Build static squashfs-tools
+apk add zlib-dev zlib-static
 wget -O squashfs-tools.tar.gz https://github.com/plougher/squashfs-tools/archive/refs/tags/4.5.1.tar.gz
 tar xf squashfs-tools.tar.gz
 cd squashfs-tools-*/squashfs-tools
