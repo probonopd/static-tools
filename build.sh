@@ -34,6 +34,14 @@ strip runtime-fuse2
 ls -lh runtime-fuse2
 cd -
 
+wget https://github.com/NixOS/patchelf/archive/0.9.tar.gz # 0.10 cripples my files, puts XXXXX inside
+tar xf 0.9.tar.gz 
+cd patchelf-*/
+./bootstrap.sh
+./configure --prefix=/usr CFLAGS=-no-pie LDFLAGS=-static
+make -j$(nproc)
+cd -
+
 # Build static zsyncmake
 apk add glib-dev glib-static
 wget http://zsync.moria.org.uk/download/zsync-0.6.2.tar.bz2
