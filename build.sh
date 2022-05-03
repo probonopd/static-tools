@@ -34,12 +34,16 @@ strip runtime-fuse2
 ls -lh runtime-fuse2
 cd -
 
+# Build static patchelf
 wget https://github.com/NixOS/patchelf/archive/0.9.tar.gz # 0.10 cripples my files, puts XXXXX inside
 tar xf 0.9.tar.gz 
 cd patchelf-*/
 ./bootstrap.sh
 ./configure --prefix=/usr CFLAGS=-no-pie LDFLAGS=-static
 make -j$(nproc)
+file patchelf
+strip patchelf
+ls -lh patchelf
 cd -
 
 # Build static zsyncmake
@@ -120,6 +124,7 @@ cd -
 
 mkdir -p out
 cp src/runtime/runtime-fuse2 out/runtime-fuse2-$ARCHITECTURE
+cp patchelf-*/patchelf out/patchelf-$ARCHITECTURE
 cp zsync-*/zsyncmake out/zsyncmake-$ARCHITECTURE
 cp squashfs-tools-*/squashfs-tools/mksquashfs out/mksquashfs-$ARCHITECTURE
 cp squashfs-tools-*/squashfs-tools/unsquashfs out/unsquashfs-$ARCHITECTURE
