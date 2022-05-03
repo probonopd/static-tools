@@ -8,7 +8,7 @@ if ! command -v apk; then
 fi
 
 apk update
-apk add alpine-sdk util-linux strace file zlib-dev zlib-static autoconf automake libtool
+apk add alpine-sdk util-linux strace file autoconf automake libtool
 
 # Build static squashfuse
 apk add fuse-dev fuse-static zstd-dev zstd-static # fuse3-static fuse3-dev
@@ -41,6 +41,7 @@ cd patchelf-*/
 ./bootstrap.sh
 ./configure --prefix=/usr CFLAGS=-no-pie LDFLAGS=-static
 make -j$(nproc)
+mv src/patchelf .
 file patchelf
 strip patchelf
 ls -lh patchelf
