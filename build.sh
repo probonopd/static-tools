@@ -23,9 +23,6 @@ make install
 /usr/bin/install -c -m 644 *.h '/usr/local/include/squashfuse' # ll.h
 cd -
 
-readlink -f .
-ls
-
 # Build static AppImage runtime
 export GIT_COMMIT=$(cat src/hash)
 cd src/runtime
