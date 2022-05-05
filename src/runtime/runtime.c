@@ -964,13 +964,26 @@ int main(int argc, char *argv[]) {
 
     arg=getArg(argc,argv,'-');
 
+    /* Print the help and then exit */
+    if(arg && strcmp(arg,"appimage-help")==0) {
+        char fullpath[PATH_MAX];
+
+        ssize_t length = readlink(appimage_path, fullpath, sizeof(fullpath));
+        if (length < 0) {
+            fprintf(stderr, "Error getting realpath for %s\n", appimage_path);
+            exit(EXIT_EXECERROR);
+        }
+        fullpath[length] = '\0';
+
+        print_help(fullpath);
+        exit(0);
+    }
+
     /* Just print the offset and then exit */
     if(arg && strcmp(arg,"appimage-offset")==0) {
         printf("%zu\n", fs_offset);
         exit(0);
     }
-
-    arg=getArg(argc,argv,'-');
 
     /* extract the AppImage */
     if(arg && strcmp(arg,"appimage-extract")==0) {
