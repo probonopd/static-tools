@@ -1,6 +1,13 @@
 SECTIONS
 {
 
+  /* AppImage magic bytes 0x414902 aligned at proposed future location 0x400; */
+  .appimage : ALIGN(0x400) {
+    BYTE(0x41);
+    BYTE(0x49);
+    BYTE(0x02);
+  }
+
   /* 16 bytes long section filled with zeroes */
   .digest_md5 : {
     /* gaps will be filled with 0 */
