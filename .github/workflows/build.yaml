@@ -41,6 +41,7 @@ jobs:
       if: contains(matrix.qemu_arch, 'x86')
       env:
         ARCHITECTURE: ${{ matrix.appimage_arch }}
+        GITHUB_SHA: ${{ GITHUB_SHA }}
       run: ./chroot_build.sh
 
     - name: Build (qemu)
@@ -51,6 +52,7 @@ jobs:
         distro: alpine_latest
         env: |
           ARCHITECTURE: ${{ matrix.appimage_arch }}
+          GITHUB_SHA: ${{ GITHUB_SHA }}
         dockerRunArgs: |
           --volume "${PWD}/out:/out"
           --volume "${PWD}/src:/src"
