@@ -7,6 +7,12 @@ Building static binaries of some tools using an [Alpine Linux](https://alpinelin
 * `desktop-file-install`, `desktop-file-validate`, `update-desktop-database` (from desktop-file-utils)
 * `appstreamcli` (from AppStream)
 
+## Static AppImage runtime
+
+__PLEASE NOTE: Do NOT add additional external dependencies or files. Everything shall be implemented in one file,  `runtime.c`.__
+
+__PLEASE NOTE: Do NOT add a complicated "build system" (like autotools, CMake,...) other than the existing simple Makefile and bash.__
+
 ## How to build static binaries
 
 * Build inside an Alpine Linux chroot (which gives us many dependencies from the system)
