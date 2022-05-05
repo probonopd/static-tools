@@ -942,6 +942,7 @@ int main(int argc, char *argv[]) {
     } else {
         strcpy(appimage_path, getenv("TARGET_APPIMAGE"));
         strcpy(argv0_path, getenv("TARGET_APPIMAGE"));
+    }
 
     // temporary directories are required in a few places
     // therefore we implement the detection of the temp base dir at the top of the code to avoid redundancy
