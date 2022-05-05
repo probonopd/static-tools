@@ -1057,10 +1057,12 @@ int main(int argc, char *argv[]) {
         if(0 != fusefs_main (5, child_argv, fuse_mounted)){
             char *title;
             char *body;
-            title = "Cannot mount squashfs, make sure you have fusermount in your path.";
-            body = "If everything fails, use --squashfs-extract to extract in the current directory";
-            printf("\n%s\n", title);
-            printf("%s\n", body);
+            title = "Cannot mount AppImage, please check your FUSE setup.";
+            body = "You might still be able to extract the contents of this AppImage \n"
+            "if you run it with the --appimage-extract option. \n"
+            "See https://github.com/AppImage/AppImageKit/wiki/FUSE \n"
+            "for more information";
+            notify(title, body, 0); // 3 seconds timeout
         };
     } else {
         /* in parent, child is $pid */
