@@ -965,7 +965,7 @@ int main(int argc, char *argv[]) {
 
     /* Just print the offset and then exit */
     if(arg && strcmp(arg,"appimage-offset")==0) {
-        printf("%lu\n", fs_offset);
+        printf("%zu\n", fs_offset);
         exit(0);
     }
 
