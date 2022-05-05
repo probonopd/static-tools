@@ -1,5 +1,5 @@
 CC            = gcc
-CFLAGS        = -std=gnu99 -s -Os -D_FILE_OFFSET_BITS=64 -ffunction-sections -fdata-sections -Wl,--gc-sections -static
+CFLAGS        = -std=gnu99 -s -Os -D_FILE_OFFSET_BITS=64 -T data_sections.ld -ffunction-sections -fdata-sections -Wl,--gc-sections -static
 LIBS          = -lsquashfuse -lsquashfuse_ll -lzstd
 
 all: runtime-fuse2 runtime-fuse3
