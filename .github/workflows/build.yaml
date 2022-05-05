@@ -36,6 +36,9 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v3
+    - name: Get git hash
+      run: |
+           git rev-parse --short HEAD  | xargs > src/hash # Fixme: find a better way to pass it in
 
     - name: Build
       if: contains(matrix.qemu_arch, 'x86')

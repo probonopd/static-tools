@@ -25,15 +25,12 @@
  *
  **************************************************************************/
 
+#ident "AppImage by Simon Peter, https://appimage.org/"
+
 #define _GNU_SOURCE
 
 #include <stddef.h>
 
-// #include <squashfuse/squashfuse.h>
-// #include <squashfuse/squashfs_fs.h>
-// #include <squashfuse/ll.h>
-
-// Like in https://github.com/vasi/squashfuse/blob/master/ll_main.c
 #include <squashfuse/ll.h>
 #include <squashfuse/fuseprivate.h>
 #include <squashfuse/nonstd.h>
@@ -548,6 +545,67 @@ mkdir_p(const char* const path)
     return 0;
 }
 
+void print_help(const char *appimage_path)
+{
+    // TODO: "--appimage-list                 List content from embedded filesystem image\n"
+    fprintf(stderr,
+        "AppImage options:\n\n"
+        "  --appimage-extract [<pattern>]  Extract content from embedded filesystem image\n"
+        "                                  If pattern is passed, only extract matching files\n"
+        "  --appimage-help                 Print this help\n"
+        "  --appimage-mount                Mount embedded filesystem image and print\n"
+        "                                  mount point and wait for kill with Ctrl-C\n"
+        "  --appimage-offset               Print byte offset to start of embedded\n"
+        "                                  filesystem image\n"
+        "  --appimage-portable-home        Create a portable home folder to use as $HOME\n"
+        "  --appimage-portable-config      Create a portable config folder to use as\n"
+        "                                  $XDG_CONFIG_HOME\n"
+        "  --appimage-signature            Print digital signature embedded in AppImage\n"
+        "  --appimage-updateinfo[rmation]  Print update info embedded in AppImage\n"
+        "  --appimage-version              Print version of AppImageKit\n"
+        "\n"
+        "Portable home:\n"
+        "\n"
+        "  If you would like the application contained inside this AppImage to store its\n"
+        "  data alongside this AppImage rather than in your home directory, then you can\n"
+        "  place a directory named\n"
+        "\n"
+        "  %s.home\n"
+        "\n"
+        "  Or you can invoke this AppImage with the --appimage-portable-home option,\n"
+        "  which will create this directory for you. As long as the directory exists\n"
+        "  and is neither moved nor renamed, the application contained inside this\n"
+        "  AppImage to store its data in this directory rather than in your home\n"
+        "  directory\n"
+    , appimage_path);
+}
+
+void portable_option(const char *arg, const char *appimage_path, const char *name)
+{
+    char option[32];
+    sprintf(option, "appimage-portable-%s", name);
+
+    if (arg && strcmp(arg, option)==0) {
+        char portable_dir[PATH_MAX];
+        char fullpath[PATH_MAX];
+
+        ssize_t length = readlink(appimage_path, fullpath, sizeof(fullpath));
+        if (length < 0) {
+            fprintf(stderr, "Error getting realpath for %s\n", appimage_path);
+            exit(EXIT_FAILURE);
+        }
+        fullpath[length] = '\0';
+
+        sprintf(portable_dir, "%s.%s", fullpath, name);
+        if (!mkdir(portable_dir, S_IRWXU))
+            fprintf(stderr, "Portable %s directory created at %s\n", name, portable_dir);
+        else
+            fprintf(stderr, "Error creating portable %s directory at %s: %s\n", name, portable_dir, strerror(errno));
+
+        exit(0);
+    }
+}
+
 bool extract_appimage(const char* const appimage_path, const char* const _prefix, const char* const _pattern, const bool overwrite, const bool verbose) {
     sqfs_err err = SQFS_OK;
     sqfs_traverse trv;
@@ -872,8 +930,19 @@ int main(int argc, char *argv[]) {
     char argv0_path[PATH_MAX];
     char * arg;
 
-    strcpy(appimage_path, "/proc/self/exe");
-    strcpy(argv0_path, argv[0]);
+    /* We might want to operate on a target appimage rather than this file itself,
+     * e.g., for appimaged which must not run untrusted code from random AppImages.
+     * This variable is intended for use by e.g., appimaged and is subject to
+     * change any time. Do not rely on it being present. We might even limit this
+     * functionality specifically for builds used by appimaged.
+     */
+    if (getenv("TARGET_APPIMAGE") == NULL) {
+        strcpy(appimage_path, "/proc/self/exe");
+        strcpy(argv0_path, argv[0]);
+    } else {
+        strcpy(appimage_path, getenv("TARGET_APPIMAGE"));
+        strcpy(argv0_path, getenv("TARGET_APPIMAGE"));
+    }
 
     // temporary directories are required in a few places
     // therefore we implement the detection of the temp base dir at the top of the code to avoid redundancy
@@ -896,15 +965,15 @@ int main(int argc, char *argv[]) {
     arg=getArg(argc,argv,'-');
 
     /* Just print the offset and then exit */
-    if(arg && strcmp(arg,"squashfs-offset")==0) {
+    if(arg && strcmp(arg,"appimage-offset")==0) {
         printf("%zu\n", fs_offset);
         exit(0);
     }
 
     arg=getArg(argc,argv,'-');
 
-    /* extract the squashfs file */
-    if(arg && strcmp(arg,"squashfs-extract")==0) {
+    /* extract the AppImage */
+    if(arg && strcmp(arg,"appimage-extract")==0) {
         char* pattern;
 
         // default use case: use standard prefix
@@ -914,11 +983,11 @@ int main(int argc, char *argv[]) {
             pattern = argv[2];
         } else {
             fprintf(stderr, "Unexpected argument count: %d\n", argc - 1);
-            fprintf(stderr, "Usage: %s --extract [<prefix>]\n", argv0_path);
+            fprintf(stderr, "Usage: %s --appimage-extract [<prefix>]\n", argv0_path);
             exit(1);
         }
 
-        if (!extract_appimage(appimage_path, "spack/", pattern, true, true)) {
+        if (!extract_appimage(appimage_path, "squashfs-root/", pattern, true, true)) {
             exit(1);
         }
 
@@ -935,6 +1004,33 @@ int main(int argc, char *argv[]) {
         exit(EXIT_EXECERROR);
     }
     fullpath[len] = '\0';
+
+    if(arg && strcmp(arg,"appimage-version")==0) {
+        fprintf(stderr,"Version: %s\n", GIT_COMMIT);
+        exit(0);
+    }
+
+    if(arg && (strcmp(arg,"appimage-updateinformation")==0 || strcmp(arg,"appimage-updateinfo")==0)) {
+        fprintf(stderr,"--%s is not yet implemented in version %s\n", arg, GIT_COMMIT);
+	    // NOTE: Must be implemented in this .c file with no additional dependencies
+        exit(1);
+    }
+
+    if(arg && strcmp(arg,"appimage-signature")==0) {
+        fprintf(stderr,"--%s is not yet implemented in version %s\n", arg, GIT_COMMIT);
+	    // NOTE: Must be implemented in this .c file with no additional dependencies
+        exit(1);
+    }
+
+    portable_option(arg, appimage_path, "home");
+    portable_option(arg, appimage_path, "config");
+
+    // If there is an argument starting with appimage- (but not appimage-mount which is handled further down)
+    // then stop here and print an error message
+    if((arg && strncmp(arg, "appimage-", 8) == 0) && (arg && strcmp(arg,"appimage-mount")!=0)) {
+        fprintf(stderr,"--%s is not yet implemented in version %s\n", arg, GIT_COMMIT);
+        exit(1);
+    }
 
     int dir_fd, res;
 
@@ -988,8 +1084,11 @@ int main(int argc, char *argv[]) {
         if(0 != fusefs_main (5, child_argv, fuse_mounted)){
             char *title;
             char *body;
-            title = "Cannot mount squashfs, make sure you have fusermount in your path.";
-            body = "If everything fails, use --squashfs-extract to extract in the current directory";
+            title = "Cannot mount AppImage, please check your FUSE setup.";
+            body = "You might still be able to extract the contents of this AppImage \n"
+            "if you run it with the --appimage-extract option. \n"
+            "See https://github.com/AppImage/AppImageKit/wiki/FUSE \n"
+            "for more information";
             printf("\n%s\n", title);
             printf("%s\n", body);
         };
@@ -1048,6 +1147,25 @@ int main(int argc, char *argv[]) {
         setenv( "APPIMAGE", fullpath, 1 );
         setenv( "ARGV0", argv0_path, 1 );
         setenv( "APPDIR", mount_dir, 1 );
+
+        char portable_home_dir[PATH_MAX];
+        char portable_config_dir[PATH_MAX];
+
+        /* If there is a directory with the same name as the AppImage plus ".home", then export $HOME */
+        strcpy (portable_home_dir, fullpath);
+        strcat (portable_home_dir, ".home");
+        if(is_writable_directory(portable_home_dir)){
+            fprintf(stderr, "Setting $HOME to %s\n", portable_home_dir);
+            setenv("HOME",portable_home_dir,1);
+        }
+
+        /* If there is a directory with the same name as the AppImage plus ".config", then export $XDG_CONFIG_HOME */
+        strcpy (portable_config_dir, fullpath);
+        strcat (portable_config_dir, ".config");
+        if(is_writable_directory(portable_config_dir)){
+            fprintf(stderr, "Setting $XDG_CONFIG_HOME to %s\n", portable_config_dir);
+            setenv("XDG_CONFIG_HOME",portable_config_dir,1);
+        }
 
         /* Original working directory */
         char cwd[1024];
