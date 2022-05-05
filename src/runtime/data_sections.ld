@@ -7,7 +7,14 @@ SECTIONS
     BYTE(0x49);
     BYTE(0x02);
   }
+  
+}
 
+/* define were the new sections will be placed */
+INSERT AFTER .interp;
+
+SECTIONS
+{
   /* 16 bytes long section filled with zeroes */
   .digest_md5 : {
     /* gaps will be filled with 0 */
