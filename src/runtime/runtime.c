@@ -1005,6 +1005,33 @@ int main(int argc, char *argv[]) {
     }
     fullpath[len] = '\0';
 
+    if(arg && strcmp(arg,"appimage-version")==0) {
+        fprintf(stderr,"Version: %s\n", GIT_COMMIT);
+        exit(0);
+    }
+
+    if(arg && (strcmp(arg,"appimage-updateinformation")==0 || strcmp(arg,"appimage-updateinfo")==0)) {
+        fprintf(stderr,"--%s is not yet implemented in version %s\n", arg, GIT_COMMIT);
+	    // NOTE: Must be implemented in this .c file with no additional dependencies
+        exit(1);
+    }
+
+    if(arg && strcmp(arg,"appimage-signature")==0) {
+        fprintf(stderr,"--%s is not yet implemented in version %s\n", arg, GIT_COMMIT);
+	    // NOTE: Must be implemented in this .c file with no additional dependencies
+        exit(1);
+    }
+
+    portable_option(arg, appimage_path, "home");
+    portable_option(arg, appimage_path, "config");
+
+    // If there is an argument starting with appimage- (but not appimage-mount which is handled further down)
+    // then stop here and print an error message
+    if((arg && strncmp(arg, "appimage-", 8) == 0) && (arg && strcmp(arg,"appimage-mount")!=0)) {
+        fprintf(stderr,"--%s is not yet implemented in version %s\n", arg, GIT_COMMIT);
+        exit(1);
+    }
+
     int dir_fd, res;
 
     size_t templen = strlen(temp_base);
@@ -1062,7 +1089,8 @@ int main(int argc, char *argv[]) {
             "if you run it with the --appimage-extract option. \n"
             "See https://github.com/AppImage/AppImageKit/wiki/FUSE \n"
             "for more information";
-            notify(title, body, 0); // 3 seconds timeout
+            printf("\n%s\n", title);
+            printf("%s\n", body);
         };
     } else {
         /* in parent, child is $pid */
