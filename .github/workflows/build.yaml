@@ -42,7 +42,7 @@ jobs:
 
     - name: Build
       if: contains(matrix.qemu_arch, 'x86')
-      env: 
+      env:
         ARCHITECTURE: ${{ matrix.appimage_arch }}
       run: ./chroot_build.sh
 
