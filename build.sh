@@ -63,6 +63,7 @@ apk add zlib-dev zlib-static
 wget -O squashfs-tools.tar.gz https://github.com/plougher/squashfs-tools/archive/refs/tags/4.5.1.tar.gz
 tar xf squashfs-tools.tar.gz
 cd squashfs-tools-*/squashfs-tools
+sed -i -e 's|#ZSTD_SUPPORT = 1|ZSTD_SUPPORT = 1|g' Makefile
 make -j$(nproc) LDFLAGS=-static
 file mksquashfs unsquashfs
 strip mksquashfs unsquashfs
