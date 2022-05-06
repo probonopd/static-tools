@@ -780,6 +780,56 @@ bool extract_appimage(const char* const appimage_path, const char* const _prefix
     return rv;
 }
 
+int rm_recursive_callback(const char* path, const struct stat* stat, const int type, struct FTW* ftw) {
+    (void) stat;
+    (void) ftw;
+
+    switch (type) {
+        case FTW_NS:
+        case FTW_DNR:
+            fprintf(stderr, "%s: ftw error: %s\n",
+                path, strerror(errno));
+            return 1;
+
+        case FTW_D:
+            // ignore directories at first, will be handled by FTW_DP
+            break;
+
+        case FTW_F:
+        case FTW_SL:
+        case FTW_SLN:
+            if (remove(path) != 0) {
+                fprintf(stderr, "Failed to remove %s: %s\n", path, strerror(errno));
+                return false;
+            }
+            break;
+
+
+        case FTW_DP:
+            if (rmdir(path) != 0) {
+                fprintf(stderr, "Failed to remove directory %s: %s\n", path, strerror(errno));
+                return false;
+            }
+            break;
+
+        default:
+            fprintf(stderr, "Unexpected fts_info\n");
+            return 1;
+    }
+
+    return 0;
+};
+
+bool rm_recursive(const char* const path) {
+    // FTW_DEPTH: perform depth-first search to make sure files are deleted before the containing directories
+    // FTW_MOUNT: prevent deletion of files on other mounted filesystems
+    // FTW_PHYS: do not follow symlinks, but report symlinks as such; this way, the symlink targets, which might point
+    //           to locations outside path will not be deleted accidentally (attackers might abuse this)
+    int rv = nftw(path, &rm_recursive_callback, 0, FTW_DEPTH | FTW_MOUNT | FTW_PHYS);
+
+    return rv == 0;
+}
+
 void build_mount_point(char* mount_dir, const char* const argv0, char const* const temp_base, const size_t templen) {
     const size_t maxnamelen = 6;
 
