@@ -1008,19 +1008,119 @@ int main(int argc, char *argv[]) {
     }
 
     // calculate full path of AppImage
+    int length;
     char fullpath[PATH_MAX];
 
-    // If we are operating on this file itself
-    ssize_t len = readlink(appimage_path, fullpath, sizeof(fullpath));
-    if (len < 0) {
-        perror("Failed to obtain absolute path");
-        exit(EXIT_EXECERROR);
+    if(getenv("TARGET_APPIMAGE") == NULL) {
+        // If we are operating on this file itself
+        ssize_t len = readlink(appimage_path, fullpath, sizeof(fullpath));
+        if (len < 0) {
+            perror("Failed to obtain absolute path");
+            exit(EXIT_EXECERROR);
+        }
+        fullpath[len] = '\0';
+    } else {
+        char* abspath = realpath(appimage_path, NULL);
+        if (abspath == NULL) {
+            perror("Failed to obtain absolute path");
+            exit(EXIT_EXECERROR);
+        }
+        strcpy(fullpath, abspath);
+        free(abspath);
     }
-    fullpath[len] = '\0';
 
-    if(arg && strcmp(arg,"appimage-version")==0) {
-        fprintf(stderr,"Version: %s\n", GIT_COMMIT);
-        exit(0);
+    if (getenv("APPIMAGE_EXTRACT_AND_RUN") != NULL || (arg && strcmp(arg, "appimage-extract-and-run") == 0)) {
+        char* hexlified_digest = NULL;
+
+        // calculate MD5 hash of file, and use it to make extracted directory name "content-aware"
+        // see https://github.com/AppImage/AppImageKit/issues/841 for more information
+        {
+            FILE* f = fopen(appimage_path, "rb");
+            if (f == NULL) {
+                perror("Failed to open AppImage file");
+                exit(EXIT_EXECERROR);
+            }
+
+            Md5Context ctx;
+            Md5Initialise(&ctx);
+
+            char buf[4096];
+            for (size_t bytes_read; (bytes_read = fread(buf, sizeof(char), sizeof(buf), f)); bytes_read > 0) {
+                Md5Update(&ctx, buf, (uint32_t) bytes_read);
+            }
+
+            MD5_HASH digest;
+            Md5Finalise(&ctx, &digest);
+
+            hexlified_digest = appimage_hexlify(digest.bytes, sizeof(digest.bytes));
+        }
+
+        char* prefix = malloc(strlen(temp_base) + 20 + strlen(hexlified_digest) + 2);
+        strcpy(prefix, temp_base);
+        strcat(prefix, "/appimage_extracted_");
+        strcat(prefix, hexlified_digest);
+        free(hexlified_digest);
+
+        const bool verbose = (getenv("VERBOSE") != NULL);
+
+        if (!extract_appimage(appimage_path, prefix, NULL, false, verbose)) {
+            fprintf(stderr, "Failed to extract AppImage\n");
+            exit(EXIT_EXECERROR);
+        }
+
+        int pid;
+        if ((pid = fork()) == -1) {
+            int error = errno;
+            fprintf(stderr, "fork() failed: %s\n", strerror(error));
+            exit(EXIT_EXECERROR);
+        } else if (pid == 0) {
+            const char apprun_fname[] = "AppRun";
+            char* apprun_path = malloc(strlen(prefix) + 1 + strlen(apprun_fname) + 1);
+            strcpy(apprun_path, prefix);
+            strcat(apprun_path, "/");
+            strcat(apprun_path, apprun_fname);
+
+            // create copy of argument list without the --appimage-extract-and-run parameter
+            char* new_argv[argc];
+            int new_argc = 0;
+            new_argv[new_argc++] = strdup(apprun_path);
+            for (int i = 1; i < argc; ++i) {
+                if (strcmp(argv[i], "--appimage-extract-and-run") != 0) {
+                    new_argv[new_argc++] = strdup(argv[i]);
+                }
+            }
+            new_argv[new_argc] = NULL;
+
+            /* Setting some environment variables that the app "inside" might use */
+            setenv("APPIMAGE", fullpath, 1);
+            setenv("ARGV0", argv0_path, 1);
+            setenv("APPDIR", prefix, 1);
+
+            execv(apprun_path, new_argv);
+
+            int error = errno;
+            fprintf(stderr, "Failed to run %s: %s\n", apprun_path, strerror(error));
+
+            free(apprun_path);
+            exit(EXIT_EXECERROR);
+        }
+
+        int status = 0;
+        int rv = waitpid(pid, &status, 0);
+        status = rv > 0 && WIFEXITED (status) ? WEXITSTATUS (status) : EXIT_EXECERROR;
+
+        if (getenv("NO_CLEANUP") == NULL) {
+            if (!rm_recursive(prefix)) {
+                fprintf(stderr, "Failed to clean up cache directory\n");
+                if (status == 0)        /* avoid messing existing failure exit status */
+                  status = EXIT_EXECERROR;
+            }
+        }
+
+        // template == prefix, must be freed only once
+        free(prefix);
+
+        exit(status);
     }
 
     if(arg && (strcmp(arg,"appimage-updateinformation")==0 || strcmp(arg,"appimage-updateinfo")==0)) {
