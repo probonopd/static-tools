@@ -578,7 +578,8 @@ void print_help(const char *appimage_path)
         "  AppImage to store its data in this directory rather than in your home\n"
         "  directory\n"
         "\n"
-        "Contains:\n"
+        "License:\n"
+        "  This executable contains code from\n"
         "  * runtime, licensed under the terms of\n"
         "    https://github.com/probonopd/static-tools/blob/master/LICENSE\n"
         "  * musl libc, licensed under the terms of\n"
@@ -589,8 +590,8 @@ void print_help(const char *appimage_path)
         "    https://github.com/vasi/squashfuse/blob/master/LICENSE\n"
         "  * libzstd, licensed under the terms of\n"
         "    https://github.com/facebook/zstd/blob/dev/LICENSE\n"
-        "  Please see https://github.com/probonopd/static-tools/ for how\n"
-        "  to obtain and build the source code.\n"
+        "Please see https://github.com/probonopd/static-tools/\n"
+        "for information on how to obtain and build the source code\n"
     , appimage_path);
 }
 
