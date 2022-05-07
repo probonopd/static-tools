@@ -39,7 +39,7 @@ jobs:
 
     - name: Get git hash
       run: |
-           echo "https://github.com/${GITHUB_REPOSITORY}/commit/" > src/runtime/version
+           echo -n "https://github.com/${GITHUB_REPOSITORY}/commit/" > src/runtime/version
            git rev-parse --short HEAD  | xargs >> src/runtime/version
 
     - name: Build
