@@ -4,7 +4,6 @@
  * Portions Copyright (c) 2007 Alexander Larsson
  * Portions from WjCryptLib_Md5 originally written by Alexander Peslyak,
    modified by WaterJuice retaining Public Domain license
-
  *
  * All Rights Reserved.
  *
