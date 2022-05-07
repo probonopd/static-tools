@@ -577,6 +577,20 @@ void print_help(const char *appimage_path)
         "  and is neither moved nor renamed, the application contained inside this\n"
         "  AppImage to store its data in this directory rather than in your home\n"
         "  directory\n"
+        "\n"
+        "Contains:\n"
+        "  * runtime, licensed under the terms of\n"
+        "    https://github.com/probonopd/static-tools/blob/master/LICENSE\n"
+        "  * musl libc, licensed under the terms of\n"
+        "    https://git.musl-libc.org/cgit/musl/tree/COPYRIGHT\n"
+        "  * libfuse, licensed under the terms of\n"
+        "    https://github.com/libfuse/libfuse/blob/master/LGPL2.txt\n"
+        "  * squashfuse, licensed under the terms of\n"
+        "    https://github.com/vasi/squashfuse/blob/master/LICENSE\n"
+        "  * libzstd, licensed under the terms of\n"
+        "    https://github.com/facebook/zstd/blob/dev/LICENSE\n"
+        "  Please see https://github.com/probonopd/static-tools/ for how\n"
+        "  to obtain and build the source code.\n"
     , appimage_path);
 }
 
