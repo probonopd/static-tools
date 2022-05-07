@@ -24,7 +24,7 @@ make install
 cd -
 
 # Build static AppImage runtime
-export GIT_COMMIT=$(cat src/hash)
+export GIT_COMMIT=$(cat src/runtime/version)
 cd src/runtime
 make runtime-fuse2 -j$(nproc)
 file runtime-fuse2
