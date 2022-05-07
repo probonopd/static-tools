@@ -1,5 +1,10 @@
 /**************************************************************************
  *
+ * PLEASE NOTE:
+ * This version of the AppImage runtime is meant to be as self-contained
+ * as possible (one .c file) and use as few external dependencies
+ * as possible
+ *
  * Copyright (c) 2004-22 Simon Peter
  * Portions Copyright (c) 2007 Alexander Larsson
  * Portions from WjCryptLib_Md5 originally written by Alexander Peslyak,
