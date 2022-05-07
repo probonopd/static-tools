@@ -734,7 +734,7 @@ bool extract_appimage(const char* const appimage_path, const char* const _prefix
                     } else {
                         struct stat st;
                         if (!overwrite && stat(prefixed_path_to_extract, &st) == 0 && st.st_size == inode.xtra.reg.file_size) {
-                            fprintf(stderr, "File exists and file size matches, skipping\n");
+                            // fprintf(stderr, "File exists and file size matches, skipping\n");
                             continue;
                         }
 
