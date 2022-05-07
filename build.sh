@@ -27,10 +27,10 @@ cd -
 export GIT_COMMIT=$(cat src/hash)
 cd src/runtime
 make runtime-fuse2 -j$(nproc)
-echo -ne 'AI\x02' | dd of=runtime-fuse2 bs=1 count=3 seek=8 conv=notrunc # magic bytes
 file runtime-fuse2
 strip runtime-fuse2
 ls -lh runtime-fuse2
+echo -ne 'AI\x02' | dd of=runtime-fuse2 bs=1 count=3 seek=8 conv=notrunc # magic bytes
 cd -
 
 # Build static patchelf
