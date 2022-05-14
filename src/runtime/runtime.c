@@ -874,8 +874,15 @@ bool rm_recursive(const char* const path) {
 void build_mount_point(char* mount_dir, const char* const argv0, char const* const temp_base, const size_t templen) {
     const size_t maxnamelen = 6;
 
+    // when running for another AppImage, we should use that for building the mountpoint name instead
+    char* target_appimage = getenv("TARGET_APPIMAGE");
+
     char* path_basename;
-    path_basename = basename(argv0);
+    if (target_appimage != NULL) {
+        path_basename = basename(target_appimage);
+    } else {
+        path_basename = basename(argv0);
+    }
 
     size_t namelen = strlen(path_basename);
     // limit length of tempdir name
