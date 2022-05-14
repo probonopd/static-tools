@@ -1,5 +1,10 @@
 /**************************************************************************
  *
+ * PLEASE NOTE:
+ * This version of the AppImage runtime is meant to be as self-contained
+ * as possible (one .c file) and use as few external dependencies
+ * as possible
+ *
  * Copyright (c) 2004-22 Simon Peter
  * Portions Copyright (c) 2007 Alexander Larsson
  * Portions from WjCryptLib_Md5 originally written by Alexander Peslyak,
@@ -811,6 +816,8 @@ int fusefs_main(int argc, char* argv[], void (* mounted)(void)) {
     struct fuse_opt fuse_opts[] = {
             {"offset=%zu", offsetof(sqfs_opts, offset), 0},
             {"timeout=%u", offsetof(sqfs_opts, idle_timeout_secs), 0},
+            {"fsname=%s", "squashfuse", 0},
+            {"subtype=%s", "squashfuse", 0},
             FUSE_OPT_END
     };
 
