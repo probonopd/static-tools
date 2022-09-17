@@ -13,9 +13,6 @@
 #include "light_elf.h"
 #include "light_byteswap.h"
 
-
-typedef Elf32_Nhdr Elf_Nhdr;
-
 static char *fname;
 static Elf64_Ehdr ehdr;
 
