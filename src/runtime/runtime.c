@@ -60,7 +60,6 @@ extern int sqfs_opt_proc(void* data, const char* arg, int key, struct fuse_args*
 #include <sys/wait.h>
 #include <fnmatch.h>
 #include <sys/mman.h>
-
 #include <stdint.h>
 
 typedef struct {
@@ -314,6 +313,57 @@ ssize_t appimage_get_elf_size(const char* fname) {
 }
 
 /* Return the offset, and the length of an ELF section with a given name in a given ELF file */
+bool appimage_get_elf_section_offset_and_length(const char* fname, const char* section_name, unsigned long* offset, unsigned long* length) {
+	uint8_t* data;
+	int i;
+	int fd = open(fname, O_RDONLY);
+	size_t map_size = (size_t) lseek(fd, 0, SEEK_END);
+
+	data = mmap(NULL, map_size, PROT_READ, MAP_SHARED, fd, 0);
+	close(fd);
+
+	// this trick works as both 32 and 64 bit ELF files start with the e_ident[EI_NINDENT] section
+	unsigned char class = data[EI_CLASS];
+
+	if (class == ELFCLASS32) {
+		Elf32_Ehdr* elf;
+		Elf32_Shdr* shdr;
+
+		elf = (Elf32_Ehdr*) data;
+		shdr = (Elf32_Shdr*) (data + ((Elf32_Ehdr*) elf)->e_shoff);
+
+		char* strTab = (char*) (data + shdr[elf->e_shstrndx].sh_offset);
+		for (i = 0; i < elf->e_shnum; i++) {
+			if (strcmp(&strTab[shdr[i].sh_name], section_name) == 0) {
+				*offset = shdr[i].sh_offset;
+				*length = shdr[i].sh_size;
+			}
+		}
+	} else if (class == ELFCLASS64) {
+		Elf64_Ehdr* elf;
+		Elf64_Shdr* shdr;
+
+		elf = (Elf64_Ehdr*) data;
+		shdr = (Elf64_Shdr*) (data + elf->e_shoff);
+
+		char* strTab = (char*) (data + shdr[elf->e_shstrndx].sh_offset);
+		for (i = 0; i < elf->e_shnum; i++) {
+			if (strcmp(&strTab[shdr[i].sh_name], section_name) == 0) {
+				*offset = shdr[i].sh_offset;
+				*length = shdr[i].sh_size;
+			}
+		}
+	} else {
+		fprintf(stderr, "Platforms other than 32-bit/64-bit are currently not supported!");
+		munmap(data, map_size);
+		return false;
+	}
+
+	munmap(data, map_size);
+	return true;
+}
+
+/* Return the offset, and the length of an ELF section with a given name in a given ELF file */
 char* read_file_offset_length(const char* fname, unsigned long offset, unsigned long length) {
     FILE* f;
     if ((f = fopen(fname, "r")) == NULL) {
@@ -330,6 +380,35 @@ char* read_file_offset_length(const char* fname, unsigned long offset, unsigned 
     return buffer;
 }
 
+int appimage_print_hex(char* fname, unsigned long offset, unsigned long length) {
+	char* data;
+	if ((data = read_file_offset_length(fname, offset, length)) == NULL) {
+		return 1;
+	}
+
+	for (long long k = 0; k < length && data[k] != '\0'; k++) {
+		printf("%x", data[k]);
+	}
+
+	free(data);
+
+	printf("\n");
+
+	return 0;
+}
+
+int appimage_print_binary(char* fname, unsigned long offset, unsigned long length) {
+	char* data;
+	if ((data = read_file_offset_length(fname, offset, length)) == NULL) {
+		return 1;
+	}
+
+	printf("%s\n", data);
+
+	free(data);
+
+	return 0;
+}
 
 /* Exit status to use when launching an AppImage fails.
  * For applications that assign meanings to exit status codes (e.g. rsync),
@@ -523,6 +602,8 @@ void print_help(const char* appimage_path) {
             "    https://github.com/vasi/squashfuse/blob/master/LICENSE\n"
             "  * libzstd, licensed under the terms of\n"
             "    https://github.com/facebook/zstd/blob/dev/LICENSE\n"
+            "  * zlib, licensed under the terms of\n"
+            "    https://zlib.net/zlib_license.html\n"
             "Please see https://github.com/probonopd/static-tools/\n"
             "for information on how to obtain and build the source code\n", appimage_path);
 }
@@ -1441,18 +1522,28 @@ int main(int argc, char* argv[]) {
         exit(status);
     }
 
-    if (arg && (strcmp(arg, "appimage-updateinformation") == 0 || strcmp(arg, "appimage-updateinfo") == 0)) {
-        fprintf(stderr, "--%s is not yet implemented in version %s\n", arg, GIT_COMMIT);
-        // NOTE: Must be implemented in this .c file with no additional dependencies
-        exit(1);
+    if(arg && (strcmp(arg,"appimage-updateinformation")==0 || strcmp(arg,"appimage-updateinfo")==0)) {
+        unsigned long offset = 0;
+        unsigned long length = 0;
+        appimage_get_elf_section_offset_and_length(appimage_path, ".upd_info", &offset, &length);
+        // fprintf(stderr, "offset: %lu\n", offset);
+        // fprintf(stderr, "length: %lu\n", length);
+        // print_hex(appimage_path, offset, length);
+        appimage_print_binary(appimage_path, offset, length);
+        exit(0);
     }
 
-    if (arg && strcmp(arg, "appimage-signature") == 0) {
-        fprintf(stderr, "--%s is not yet implemented in version %s\n", arg, GIT_COMMIT);
-        // NOTE: Must be implemented in this .c file with no additional dependencies
-        exit(1);
+    if(arg && strcmp(arg,"appimage-signature")==0) {
+        unsigned long offset = 0;
+        unsigned long length = 0;
+        appimage_get_elf_section_offset_and_length(appimage_path, ".sha256_sig", &offset, &length);
+        // fprintf(stderr, "offset: %lu\n", offset);
+        // fprintf(stderr, "length: %lu\n", length);
+        // print_hex(appimage_path, offset, length);
+        appimage_print_binary(appimage_path, offset, length);
+        exit(0);
     }
-
+    
     portable_option(arg, appimage_path, "home");
     portable_option(arg, appimage_path, "config");
 
