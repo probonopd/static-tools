@@ -602,6 +602,8 @@ void print_help(const char* appimage_path) {
             "    https://github.com/vasi/squashfuse/blob/master/LICENSE\n"
             "  * libzstd, licensed under the terms of\n"
             "    https://github.com/facebook/zstd/blob/dev/LICENSE\n"
+            "  * zlib, licensed under the terms of\n"
+            "    https://zlib.net/zlib_license.html\n"
             "Please see https://github.com/probonopd/static-tools/\n"
             "for information on how to obtain and build the source code\n", appimage_path);
 }
