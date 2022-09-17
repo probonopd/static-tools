@@ -60,8 +60,9 @@ extern int sqfs_opt_proc(void* data, const char* arg, int key, struct fuse_args*
 #include <sys/wait.h>
 #include <fnmatch.h>
 #include <sys/mman.h>
-
 #include <stdint.h>
+
+#include "elf.c"
 
 typedef struct {
     uint32_t lo;
@@ -1441,18 +1442,28 @@ int main(int argc, char* argv[]) {
         exit(status);
     }
 
-    if (arg && (strcmp(arg, "appimage-updateinformation") == 0 || strcmp(arg, "appimage-updateinfo") == 0)) {
-        fprintf(stderr, "--%s is not yet implemented in version %s\n", arg, GIT_COMMIT);
-        // NOTE: Must be implemented in this .c file with no additional dependencies
-        exit(1);
+    if(arg && (strcmp(arg,"appimage-updateinformation")==0 || strcmp(arg,"appimage-updateinfo")==0)) {
+        unsigned long offset = 0;
+        unsigned long length = 0;
+        appimage_get_elf_section_offset_and_length(appimage_path, ".upd_info", &offset, &length);
+        // fprintf(stderr, "offset: %lu\n", offset);
+        // fprintf(stderr, "length: %lu\n", length);
+        // print_hex(appimage_path, offset, length);
+        appimage_print_binary(appimage_path, offset, length);
+        exit(0);
     }
 
-    if (arg && strcmp(arg, "appimage-signature") == 0) {
-        fprintf(stderr, "--%s is not yet implemented in version %s\n", arg, GIT_COMMIT);
-        // NOTE: Must be implemented in this .c file with no additional dependencies
-        exit(1);
+    if(arg && strcmp(arg,"appimage-signature")==0) {
+        unsigned long offset = 0;
+        unsigned long length = 0;
+        appimage_get_elf_section_offset_and_length(appimage_path, ".sha256_sig", &offset, &length);
+        // fprintf(stderr, "offset: %lu\n", offset);
+        // fprintf(stderr, "length: %lu\n", length);
+        // print_hex(appimage_path, offset, length);
+        appimage_print_binary(appimage_path, offset, length);
+        exit(0);
     }
-
+    
     portable_option(arg, appimage_path, "home");
     portable_option(arg, appimage_path, "config");
 
