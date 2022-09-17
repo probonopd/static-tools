@@ -13,6 +13,17 @@ __PLEASE NOTE: Do NOT add additional external dependencies or files. Everything 
 
 __PLEASE NOTE: Do NOT add a complicated "build system" (like autotools, CMake,...) other than the existing simple Makefile and bash.__
 
+## Building locally
+
+Binaries are provided on GitHub Releases. Should you prefer to build locally or on GitHub Codespaces, the following will build the contents of this repository in an Alpine container:
+
+```
+export ARCHITECTURE=x86_64
+./chroot_build.sh
+```
+
+This whole process takes only a few seconds on GitHub Codespaces.
+
 ## How to build static binaries
 
 * Build inside an Alpine Linux chroot (which gives us many dependencies from the system)
