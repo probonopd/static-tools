@@ -10,7 +10,6 @@
 #include <sys/mman.h>
 #include <assert.h>
 
-#include "light_elf.h"
 #include "light_byteswap.h"
 
 static char *fname;
