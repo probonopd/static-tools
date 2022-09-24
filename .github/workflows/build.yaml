@@ -39,11 +39,10 @@ jobs:
 
     - name: Get git hash
       run: |
-        VERSION="$(date --utc +%Y-%m-%d)-$(git rev-parse --short HEAD)"
-        echo -n "https://github.com/${GITHUB_REPOSITORY}/releases/tag/build-${VERSION}" > src/runtime/version
-        echo "${VERSION}" > tag.txt
+           echo -n "https://github.com/${GITHUB_REPOSITORY}/commit/" > src/runtime/version
+           git rev-parse --short HEAD  | xargs >> src/runtime/version
 
-    - name: Build (x86)
+    - name: Build
       if: contains(matrix.qemu_arch, 'x86')
       env:
         ARCHITECTURE: ${{ matrix.appimage_arch }}
@@ -60,17 +59,17 @@ jobs:
         dockerRunArgs: |
           --volume "${PWD}/out:/out"
           --volume "${PWD}/src:/src"
-        run: ./build.sh
-
-    - name: Upload Build Artifacts
-      uses: actions/upload-artifact@v3
+        run: |
+             ./build.sh
+             # echo "artifactName=$GITHUB_RUN_NUMBER_$(date +%Y-%m-%d)-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+    - uses: actions/upload-artifact@v3
       with:
         name: artifacts
         path: ./out/*
 
-    - name: Create Release
+    - name: Upload to releases
       if: github.event_name != 'pull_request' && github.ref_name == 'master'
-      run: |
-        VERSION="$(cat tag.txt)"
-        gh release create --prerelease --title "Build ${VERSION}" "build-${VERSION}" out/* \
-          || gh release upload "build-${VERSION}" out/*
+      uses: softprops/action-gh-release@v1
+      with:
+        files: out/*
+        tag_name: continuous
