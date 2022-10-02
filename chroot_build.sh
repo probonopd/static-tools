@@ -7,7 +7,7 @@ set -ex
 #############################################
 
 wget http://dl-cdn.alpinelinux.org/alpine/v3.15/releases/$ARCHITECTURE/alpine-minirootfs-3.15.4-$ARCHITECTURE.tar.gz
-sudo rm -rf ./miniroot  true # Clean up from previous runs
+sudo rm -rf ./miniroot true # Clean up from previous runs
 mkdir -p ./miniroot
 cd ./miniroot
 sudo tar xf ../alpine-minirootfs-*-$ARCHITECTURE.tar.gz
@@ -16,8 +16,6 @@ cd -
 #############################################
 # Prepare chroot
 #############################################
-
-sudo cp -r ./src miniroot/src
 
 sudo mount -o bind /dev miniroot/dev
 sudo mount -t proc none miniroot/proc
@@ -41,10 +39,9 @@ sudo umount miniroot/proc miniroot/sys miniroot/dev
 #############################################
 
 # Use the same architecture names as https://github.com/AppImage/AppImageKit/releases/
-if [ "$ARCHITECTURE" = "x86" ] ; then ARCHITECTURE=i686 ; fi
+if [ "$ARCHITECTURE" = "x86" ]; then ARCHITECTURE=i686; fi
 
 mkdir out/
-sudo find miniroot/ -type f -executable -name 'runtime-fuse2' -exec cp {} out/runtime-fuse2-$ARCHITECTURE \;
 sudo find miniroot/ -type f -executable -name 'patchelf' -exec cp {} out/patchelf-$ARCHITECTURE \;
 sudo find miniroot/ -type f -executable -name 'zsyncmake' -exec cp {} out/zsyncmake-$ARCHITECTURE \;
 sudo find miniroot/ -type f -executable -name 'mksquashfs' -exec cp {} out/mksquashfs-$ARCHITECTURE \;
