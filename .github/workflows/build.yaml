@@ -37,11 +37,6 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
-    - name: Get git hash
-      run: |
-           echo -n "https://github.com/${GITHUB_REPOSITORY}/commit/" > src/runtime/version
-           git rev-parse --short HEAD  | xargs >> src/runtime/version
-
     - name: Build
       if: contains(matrix.qemu_arch, 'x86')
       env:
@@ -58,7 +53,6 @@ jobs:
           ARCHITECTURE: ${{ matrix.appimage_arch }}
         dockerRunArgs: |
           --volume "${PWD}/out:/out"
-          --volume "${PWD}/src:/src"
         run: |
              ./build.sh
              # echo "artifactName=$GITHUB_RUN_NUMBER_$(date +%Y-%m-%d)-$(git rev-parse --short HEAD)" >> $GITHUB_ENV

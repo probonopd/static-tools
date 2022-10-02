@@ -10,32 +10,9 @@ fi
 apk update
 apk add alpine-sdk util-linux strace file autoconf automake libtool
 
-# Build static squashfuse
-apk add fuse-dev fuse-static zstd-dev zstd-static zlib-dev zlib-static # fuse3-static fuse3-dev
-wget -c -q "https://github.com/vasi/squashfuse/archive/e51978c.tar.gz"
-tar xf e51978c.tar.gz
-cd squashfuse-*/
-./autogen.sh
-./configure --help
-./configure CFLAGS=-no-pie LDFLAGS=-static
-make -j$(nproc)
-make install
-/usr/bin/install -c -m 644 *.h '/usr/local/include/squashfuse' # ll.h
-cd -
-
-# Build static AppImage runtime
-export GIT_COMMIT=$(cat src/runtime/version)
-cd src/runtime
-make runtime-fuse2 -j$(nproc)
-file runtime-fuse2
-strip runtime-fuse2
-ls -lh runtime-fuse2
-echo -ne 'AI\x02' | dd of=runtime-fuse2 bs=1 count=3 seek=8 conv=notrunc # magic bytes, always do AFTER strip
-cd -
-
 # Build static patchelf
 wget https://github.com/NixOS/patchelf/archive/0.9.tar.gz # 0.10 cripples my files, puts XXXXX inside
-tar xf 0.9.tar.gz 
+tar xf 0.9.tar.gz
 cd patchelf-*/
 ./bootstrap.sh
 ./configure --prefix=/usr CFLAGS=-no-pie LDFLAGS=-static
@@ -59,7 +36,7 @@ strip zsyncmake
 cd -
 
 # Build static squashfs-tools
-apk add zlib-dev zlib-static
+apk add zlib-dev zlib-static zstd-dev zstd-static
 wget -O squashfs-tools.tar.gz https://github.com/plougher/squashfs-tools/archive/refs/tags/4.5.1.tar.gz
 tar xf squashfs-tools.tar.gz
 cd squashfs-tools-*/squashfs-tools
@@ -82,8 +59,8 @@ autoreconf --install # https://github.com/shendurelab/LACHESIS/issues/31#issueco
 make -j$(nproc)
 cd src/
 gcc -static -o desktop-file-validate keyfileutils.o validate.o validator.o -lglib-2.0 -lintl
-gcc -static -o update-desktop-database  update-desktop-database.o -lglib-2.0 -lintl
-gcc -static -o desktop-file-install keyfileutils.o validate.o install.o  -lglib-2.0 -lintl
+gcc -static -o update-desktop-database update-desktop-database.o -lglib-2.0 -lintl
+gcc -static -o desktop-file-install keyfileutils.o validate.o install.o -lglib-2.0 -lintl
 strip desktop-file-install desktop-file-validate update-desktop-database
 cd ../..
 
@@ -125,7 +102,6 @@ strip bsdtar
 cd -
 
 mkdir -p out
-cp src/runtime/runtime-fuse2 out/runtime-fuse2-$ARCHITECTURE
 cp patchelf-*/patchelf out/patchelf-$ARCHITECTURE
 cp zsync-*/zsyncmake out/zsyncmake-$ARCHITECTURE
 cp squashfs-tools-*/squashfs-tools/mksquashfs out/mksquashfs-$ARCHITECTURE
