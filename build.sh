@@ -71,7 +71,7 @@ cd -
 
 # Build static desktop-file-utils
 # apk add glib-static glib-dev
-wget -c https://www.freedesktop.org/software/desktop-file-utils/releases/desktop-file-utils-0.15.tar.gz
+wget -c https://gitlab.freedesktop.org/xdg/desktop-file-utils/-/archive/56d220dd679c7c3a8f995a41a27a7d6f3df49dea/desktop-file-utils-56d220dd679c7c3a8f995a41a27a7d6f3df49dea.tar.gz
 tar xf desktop-file-utils-*.tar.gz
 cd desktop-file-utils-*/
 # The next 2 lines are a workaround for: checking build system type... ./config.guess: unable to guess system type
@@ -81,9 +81,9 @@ autoreconf --install # https://github.com/shendurelab/LACHESIS/issues/31#issueco
 ./configure CFLAGS=-no-pie LDFLAGS=-static
 make -j$(nproc)
 cd src/
-gcc -static -o desktop-file-validate keyfileutils.o validate.o validator.o -lglib-2.0 -lintl
-gcc -static -o update-desktop-database  update-desktop-database.o -lglib-2.0 -lintl
-gcc -static -o desktop-file-install keyfileutils.o validate.o install.o  -lglib-2.0 -lintl
+gcc -static -o desktop-file-validate keyfileutils.o validate.o validator.o mimeutils.o -lglib-2.0 -lintl
+gcc -static -o update-desktop-database  update-desktop-database.o mimeutils.o -lglib-2.0 -lintl
+gcc -static -o desktop-file-install keyfileutils.o validate.o install.o mimeutils.o -lglib-2.0 -lintl
 strip desktop-file-install desktop-file-validate update-desktop-database
 cd ../..
 
