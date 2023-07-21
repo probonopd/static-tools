@@ -135,3 +135,49 @@ cp desktop-file-utils-*/src/desktop-file-install out/desktop-file-install-$ARCHI
 cp desktop-file-utils-*/src/desktop-file-validate out/desktop-file-validate-$ARCHITECTURE
 cp desktop-file-utils-*/src/update-desktop-database out/update-desktop-database-$ARCHITECTURE
 cp appstream-*/prefix/bin/appstreamcli out/appstreamcli-$ARCHITECTURE
+
+# Build static strace
+mkdir -p out
+apk add xz gawk glib-dev
+wget https://github.com/strace/strace/releases/download/v6.4/strace-6.4.tar.xz
+tar xf strace-*.tar.xz
+cd strace-*
+LDFLAGS='-static -pthread' ./configure --disable-mpers
+make -j$(nproc)
+cp src/strace ../out/strace-$ARCHITECTURE
+cd -
+
+# Build static iproute2 tools
+mkdir -p out
+apk add glib-dev bison flex
+wget https://mirrors.edge.kernel.org/pub/linux/utils/net/iproute2/iproute2-6.4.0.tar.gz
+tar xf iproute2-*.tar.gz
+cd iproute2-*
+LDFLAGS='-static' ./configure
+LDFLAGS='-static' make -j$(nproc)
+
+cp ip/ip ../out/ip-$ARCHITECTURE
+for tool in ifstat lnstat nstat rtacct ss
+do
+    cp misc/$tool ../out/$tool-$ARCHITECTURE
+done
+cd -
+
+# Build procps tools
+out=$PWD/out
+mkdir -p $out
+apk add gettext gettext-dev ncurses ncurses-dev ncurses-static glib-dev glib-static
+wget https://gitlab.com/procps-ng/procps/-/archive/v4.0.3/procps-v4.0.3.tar.gz
+tar xf procps-*
+cd procps-*
+./autogen.sh
+LDFLAGS='-lintl --static' ./configure --enable-static --disable-shared --disable-w --prefix /tmp/procps
+LDFLAGS='-lintl --static' make -j$(nproc) install
+
+cd /tmp/procps/bin/
+for tool in *
+do
+    cp $tool $out/$tool-$ARCHITECTURE
+done
+cd -
+cd -
