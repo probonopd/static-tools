@@ -88,7 +88,7 @@ strip desktop-file-install desktop-file-validate update-desktop-database
 cd ../..
 
 # Build appstreamcli
-apk add glib-static meson libxml2-dev yaml-dev yaml-static gperf curl-static curl-dev
+apk add glib-static meson libxml2-dev yaml-dev yaml-static gperf
 # Compile liblmdb from source as Alpine only ship it as a .so
 wget https://git.openldap.org/openldap/openldap/-/archive/LMDB_0.9.29/openldap-LMDB_0.9.29.tar.gz
 tar xf openldap-LMDB_*.tar.gz
@@ -107,7 +107,7 @@ sed -i -e "s|subdir('po/')||" meson.build
 sed -i -e "s|subdir('docs/')||" meson.build
 sed -i -e "s|subdir('tests/')||" meson.build
 # -no-pie is required to statically link to libc
-CFLAGS=-no-pie LDFLAGS=-static meson setup build --buildtype=release --default-library=static --prefix="$(pwd)/prefix" --strip -Db_lto=true -Db_ndebug=if-release -Dstemming=false -Dgir=false -Dapidocs=false
+CFLAGS=-no-pie LDFLAGS=-static meson setup build --without-curl --buildtype=release --default-library=static --prefix="$(pwd)/prefix" --strip -Db_lto=true -Db_ndebug=if-release -Dstemming=false -Dgir=false -Dapidocs=false
 # Install in a staging enviroment
 meson install -C build
 file prefix/bin/appstreamcli
