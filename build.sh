@@ -108,7 +108,7 @@ strip desktop-file-install desktop-file-validate update-desktop-database
 cd ../..
 
 # Build appstreamcli
-apk add glib-static meson libxml2-dev yaml-dev yaml-static gperf curl-static
+apk add glib-static meson libxml2-dev yaml-dev yaml-static gperf curl-static curl-dev
 # Compile liblmdb from source as Alpine only ship it as a .so
 wget https://git.openldap.org/openldap/openldap/-/archive/LMDB_0.9.29/openldap-LMDB_0.9.29.tar.gz
 tar xf openldap-LMDB_*.tar.gz
