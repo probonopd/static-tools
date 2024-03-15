@@ -117,7 +117,7 @@ make liblmdb.a
 install -D -m 644 liblmdb.a /usr/local/lib/liblmdb.a
 install -D -m 644 lmdb.h /usr/local/include/lmdb.h
 cd -
-wget -O appstream.tar.gz https://github.com/ximion/appstream/archive/v0.12.9.tar.gz
+wget -O appstream.tar.gz https://github.com/ximion/appstream/archive/v1.0.2.tar.gz # Keep at v1.0.x so as to not have a moving target
 tar xf appstream.tar.gz
 cd appstream-*/
 # Ask for static dependencies
