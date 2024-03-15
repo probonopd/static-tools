@@ -67,5 +67,5 @@ sudo find miniroot/ -type f -executable -name 'bsdtar' -exec cp {} out/bsdtar-$A
 sudo find miniroot/ -type f -executable -name 'desktop-file-install' -exec cp {} out/desktop-file-install-$ARCHITECTURE \;
 sudo find miniroot/ -type f -executable -name 'desktop-file-validate' -exec cp {} out/desktop-file-validate-$ARCHITECTURE \;
 sudo find miniroot/ -type f -executable -name 'update-desktop-database' -exec cp {} out/update-desktop-database-$ARCHITECTURE \;
-sudo cp miniroot/appstream-0.12.9/prefix/bin/appstreamcli out/appstreamcli-$ARCHITECTURE
+sudo cp miniroot/appstream-*/prefix/bin/appstreamcli out/appstreamcli-$ARCHITECTURE
 sudo rm -rf miniroot/
