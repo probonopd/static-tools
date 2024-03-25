@@ -111,7 +111,7 @@ cd ../..
 # https://github.com/Artox/alpine-systemd
 apk add alpine-sdk git findutils shadow
 mkdir -p /var/cache/distfiles
-abuild-keygen -a -i
+abuild-keygen -a -i -n
 git clone https://github.com/Artox/alpine-systemd.git
 cd alpine-systemd
 abuild -r
