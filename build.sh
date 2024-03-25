@@ -88,7 +88,7 @@ strip desktop-file-install desktop-file-validate update-desktop-database
 cd ../..
 
 # Build appstreamcli
-apk add glib-static meson libxml2-dev yaml-dev yaml-static gperf curl-dev curl-static curl itstool # libxmlb-dev
+apk add glib-static meson libxml2-dev libxml2-static yaml-dev yaml-static gperf curl-dev curl-static curl itstool # libxmlb-dev
 # libxmlb-static is missing, need to build our own
 wget https://github.com/hughsie/libxmlb/releases/download/0.3.15/libxmlb-0.3.15.tar.xz
 tar xf libxmlb-0.3.15.tar.xz
