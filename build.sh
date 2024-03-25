@@ -96,7 +96,7 @@ cd libxmlb-*
 meson build --default-library=static -Dintrospection=false -Dgtkdoc=false -Dcli=false
 ninja -C build
 ninja -C build install
-ldconfig
+# ldconfig # segfaults
 cd -
 wget -O appstream.tar.gz https://github.com/ximion/appstream/archive/v1.0.2.tar.gz # Keep at v1.0.x so as to not have a moving target
 tar xf appstream.tar.gz
