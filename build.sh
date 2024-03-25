@@ -108,7 +108,17 @@ strip desktop-file-install desktop-file-validate update-desktop-database
 cd ../..
 
 # Build appstreamcli
-trap 'cat /appstream-1.0.2/build/meson-logs/meson-log.txt' EXIT
+# https://github.com/Artox/alpine-systemd
+apk add alpine-sdk git findutils
+adduser -G abuild abuild
+mkdir -p /var/cache/distfiles
+chown abuild:abuild /var/cache/distfiles
+su - abuild
+abuild-keygen -a -i
+git clone https://github.com/Artox/alpine-systemd.git
+cd alpine-systemd
+abuild -r
+find ~/packages/user -name 'libsystemd-dev-*.apk' -type f -exec apk add --allow-untrusted {} +
 apk add glib-static meson libxml2-dev yaml-dev yaml-static gperf curl-dev curl-static curl libxmlb-dev
 wget -O appstream.tar.gz https://github.com/ximion/appstream/archive/v1.0.2.tar.gz # Keep at v1.0.x so as to not have a moving target
 tar xf appstream.tar.gz
