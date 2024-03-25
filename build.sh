@@ -110,15 +110,13 @@ cd ../..
 # Build appstreamcli
 # https://github.com/Artox/alpine-systemd
 apk add alpine-sdk git findutils shadow
-useradd -m -g abuild abuild # adduser -G abuild abuild
 mkdir -p /var/cache/distfiles
-chown abuild:abuild /var/cache/distfiles
-su - abuild
 abuild-keygen -a -i
 git clone https://github.com/Artox/alpine-systemd.git
 cd alpine-systemd
 abuild -r
 find ~/packages/user -name 'libsystemd-dev-*.apk' -type f -exec apk add --allow-untrusted {} +
+# End of alpine-systemd
 apk add glib-static meson libxml2-dev yaml-dev yaml-static gperf curl-dev curl-static curl libxmlb-dev
 wget -O appstream.tar.gz https://github.com/ximion/appstream/archive/v1.0.2.tar.gz # Keep at v1.0.x so as to not have a moving target
 tar xf appstream.tar.gz
