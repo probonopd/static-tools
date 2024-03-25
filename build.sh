@@ -122,7 +122,7 @@ wget -O appstream.tar.gz https://github.com/ximion/appstream/archive/v1.0.2.tar.
 tar xf appstream.tar.gz
 cd appstream-*/
 # -no-pie is required to statically link to libc
-CFLAGS=-no-pie LDFLAGS=-static meson setup build --buildtype=release --prefix="$(pwd)/prefix" --strip -Db_lto=true -Db_ndebug=if-release -Dstemming=false -Dgir=false -Dapidocs=false -Dinstall-docs=false -Dsystemd=false -default_library=static
+CFLAGS=-no-pie LDFLAGS=-static meson setup build --buildtype=release --prefix="$(pwd)/prefix" --strip -Db_lto=true -Db_ndebug=if-release -Dstemming=false -Dgir=false -Dapidocs=false -Dinstall-docs=false -Dsystemd=false -default-library=static
 # Install in a staging enviroment
 meson install -C build
 file prefix/bin/appstreamcli
