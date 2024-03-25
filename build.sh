@@ -110,25 +110,11 @@ cd ../..
 # Build appstreamcli
 trap 'cat /appstream-1.0.2/build/meson-logs/meson-log.txt' EXIT
 apk add glib-static meson libxml2-dev yaml-dev yaml-static gperf curl-dev curl-static curl libxmlb-dev
-# Compile liblmdb from source as Alpine only ship it as a .so
-wget https://git.openldap.org/openldap/openldap/-/archive/LMDB_0.9.29/openldap-LMDB_0.9.29.tar.gz
-tar xf openldap-LMDB_*.tar.gz
-cd openldap-LMDB_*/libraries/liblmdb
-make liblmdb.a
-install -D -m 644 liblmdb.a /usr/local/lib/liblmdb.a
-install -D -m 644 lmdb.h /usr/local/include/lmdb.h
-cd -
 wget -O appstream.tar.gz https://github.com/ximion/appstream/archive/v1.0.2.tar.gz # Keep at v1.0.x so as to not have a moving target
 tar xf appstream.tar.gz
 cd appstream-*/
-# Ask for static dependencies
-sed -i -E -e "s|(dependency\('.*')|\1, static: true|g" meson.build
-# Disable po, docs and tests
-sed -i -e "s|subdir('po/')||" meson.build
-sed -i -e "s|subdir('docs/')||" meson.build
-sed -i -e "s|subdir('tests/')||" meson.build
 # -no-pie is required to statically link to libc
-CFLAGS=-no-pie LDFLAGS=-static meson setup build --buildtype=release --default-library=static --prefix="$(pwd)/prefix" --strip -Db_lto=true -Db_ndebug=if-release -Dstemming=false -Dgir=false -Dapidocs=false
+CFLAGS=-no-pie LDFLAGS=-static meson setup build --buildtype=release --default-library=static --prefix="$(pwd)/prefix" --strip -Db_lto=true -Db_ndebug=if-release -Dstemming=false -Dgir=false -Dapidocs=false -Dinstall-docs=false -Ddefault_library=static
 # Install in a staging enviroment
 meson install -C build
 file prefix/bin/appstreamcli
