@@ -109,8 +109,8 @@ cd ../..
 
 # Build appstreamcli
 # https://github.com/Artox/alpine-systemd
-apk add alpine-sdk git findutils
-adduser -G abuild abuild
+apk add alpine-sdk git findutils shadow
+useradd -m -g abuild abuild # adduser -G abuild abuild
 mkdir -p /var/cache/distfiles
 chown abuild:abuild /var/cache/distfiles
 su - abuild
