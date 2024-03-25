@@ -108,7 +108,16 @@ strip desktop-file-install desktop-file-validate update-desktop-database
 cd ../..
 
 # Build appstreamcli
-apk add glib-static meson libxml2-dev yaml-dev yaml-static gperf curl-dev curl-static curl libxmlb-dev itstool
+apk add glib-static meson libxml2-dev yaml-dev yaml-static gperf curl-dev curl-static curl itstool # libxmlb-dev
+# libxmlb-static is missing, need to build our own
+wget https://github.com/hughsie/libxmlb/releases/download/0.3.15/libxmlb-0.3.15.tar.xz
+tar xf libxmlb-0.3.15.tar.xz
+cd libxmlb-*
+meson build --default-library=static
+ninja -C build
+ninja -C build install
+ldconfig
+cd -
 wget -O appstream.tar.gz https://github.com/ximion/appstream/archive/v1.0.2.tar.gz # Keep at v1.0.x so as to not have a moving target
 tar xf appstream.tar.gz
 cd appstream-*/
