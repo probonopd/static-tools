@@ -113,7 +113,7 @@ apk add glib-static meson libxml2-dev yaml-dev yaml-static gperf curl-dev curl-s
 wget https://github.com/hughsie/libxmlb/releases/download/0.3.15/libxmlb-0.3.15.tar.xz
 tar xf libxmlb-0.3.15.tar.xz
 cd libxmlb-*
-meson build --default-library=static
+meson build --default-library=static -Dintrospection=false -Dgtkdoc=false -Dcli=false
 ninja -C build
 ninja -C build install
 ldconfig
