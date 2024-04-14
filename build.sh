@@ -46,7 +46,7 @@ make runtime-fuse3 -j$(nproc)
 file runtime-fuse3
 strip runtime-fuse3
 ls -lh runtime-fuse3
-echo -ne 'AI\x02' | dd of=runtime-fuse2 bs=1 count=3 seek=8 conv=notrunc # magic bytes, always do AFTER strip
+echo -ne 'AI\x02' | dd of=runtime-fuse3 bs=1 count=3 seek=8 conv=notrunc # magic bytes, always do AFTER strip
 cd -
 
 # Build static patchelf
@@ -141,7 +141,7 @@ strip bsdtar
 cd -
 
 mkdir -p out
-cp src/runtime/runtime-fuse2 out/runtime-fuse2-$ARCHITECTURE
+cp src/runtime/runtime-fuse3 out/runtime-fuse3-$ARCHITECTURE
 cp patchelf-*/patchelf out/patchelf-$ARCHITECTURE
 cp zsync-*/zsyncmake out/zsyncmake-$ARCHITECTURE
 cp squashfs-tools-*/squashfs-tools/mksquashfs out/mksquashfs-$ARCHITECTURE
