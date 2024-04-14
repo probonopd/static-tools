@@ -18,6 +18,7 @@ cd -
 #############################################
 
 sudo cp -r ./src miniroot/src
+sudo cp -r ./patches miniroot/patches
 
 sudo mount -o bind /dev miniroot/dev
 sudo mount -t proc none miniroot/proc
@@ -58,7 +59,7 @@ sudo umount miniroot/proc miniroot/sys miniroot/dev
 if [ "$ARCHITECTURE" = "x86" ] ; then ARCHITECTURE=i686 ; fi
 
 mkdir out/
-sudo find miniroot/ -type f -executable -name 'runtime-fuse2' -exec cp {} out/runtime-fuse2-$ARCHITECTURE \;
+sudo find miniroot/ -type f -executable -name 'runtime-fuse3' -exec cp {} out/runtime-fuse3-$ARCHITECTURE \;
 sudo find miniroot/ -type f -executable -name 'patchelf' -exec cp {} out/patchelf-$ARCHITECTURE \;
 sudo find miniroot/ -type f -executable -name 'zsyncmake' -exec cp {} out/zsyncmake-$ARCHITECTURE \;
 sudo find miniroot/ -type f -executable -name 'mksquashfs' -exec cp {} out/mksquashfs-$ARCHITECTURE \;

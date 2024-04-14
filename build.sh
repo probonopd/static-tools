@@ -7,11 +7,27 @@ if ! command -v apk; then
 	exit 1
 fi
 
+# Minimize binary size
+export CFLAGS="-ffunction-sections -fdata-sections -Os"
+
 apk update
-apk add alpine-sdk util-linux strace file autoconf automake libtool
+apk add alpine-sdk util-linux strace file autoconf automake libtool xz
+
+# Build static libfuse3 with patch for https://github.com/AppImage/type2-runtime/issues/10
+apk add eudev-dev gettext-dev linux-headers meson # From https://git.alpinelinux.org/aports/tree/main/fuse3/APKBUILD
+wget -c -q "https://github.com/libfuse/libfuse/releases/download/fuse-3.15.0/fuse-3.15.0.tar.xz"
+tar xf fuse-3.*.tar.xz
+cd fuse-3.*/
+patch -p1 < ../patches/libfuse/mount.c.diff
+mkdir build
+cd build
+meson setup --prefix=/usr ..
+meson configure --default-library static
+ninja install
+cd ../../
 
 # Build static squashfuse
-apk add fuse-dev fuse-static zstd-dev zstd-static zlib-dev zlib-static # fuse3-static fuse3-dev
+apk add zstd-dev zstd-static zlib-dev zlib-static # fuse-dev fuse-static fuse3-static fuse3-dev
 wget -c -q "https://github.com/vasi/squashfuse/archive/e51978c.tar.gz"
 tar xf e51978c.tar.gz
 cd squashfuse-*/
@@ -26,11 +42,11 @@ cd -
 # Build static AppImage runtime
 export GIT_COMMIT=$(cat src/runtime/version)
 cd src/runtime
-make runtime-fuse2 -j$(nproc)
-file runtime-fuse2
-strip runtime-fuse2
-ls -lh runtime-fuse2
-echo -ne 'AI\x02' | dd of=runtime-fuse2 bs=1 count=3 seek=8 conv=notrunc # magic bytes, always do AFTER strip
+make runtime-fuse3 -j$(nproc)
+file runtime-fuse3
+strip runtime-fuse3
+ls -lh runtime-fuse3
+echo -ne 'AI\x02' | dd of=runtime-fuse3 bs=1 count=3 seek=8 conv=notrunc # magic bytes, always do AFTER strip
 cd -
 
 # Build static patchelf
@@ -125,7 +141,7 @@ strip bsdtar
 cd -
 
 mkdir -p out
-cp src/runtime/runtime-fuse2 out/runtime-fuse2-$ARCHITECTURE
+cp src/runtime/runtime-fuse3 out/runtime-fuse3-$ARCHITECTURE
 cp patchelf-*/patchelf out/patchelf-$ARCHITECTURE
 cp zsync-*/zsyncmake out/zsyncmake-$ARCHITECTURE
 cp squashfs-tools-*/squashfs-tools/mksquashfs out/mksquashfs-$ARCHITECTURE
