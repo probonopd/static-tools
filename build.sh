@@ -11,7 +11,7 @@ fi
 export CFLAGS="-ffunction-sections -fdata-sections -Os"
 
 apk update
-apk add alpine-sdk util-linux strace file autoconf automake libtool xz
+apk add alpine-sdk util-linux strace file autoconf automake libtool xz lz4 lz4-dev lz4-static
 
 # Build static libfuse3 with patch for https://github.com/AppImage/type2-runtime/issues/10
 apk add eudev-dev gettext-dev linux-headers meson # From https://git.alpinelinux.org/aports/tree/main/fuse3/APKBUILD
@@ -80,6 +80,7 @@ wget -O squashfs-tools.tar.gz https://github.com/plougher/squashfs-tools/archive
 tar xf squashfs-tools.tar.gz
 cd squashfs-tools-*/squashfs-tools
 sed -i -e 's|#ZSTD_SUPPORT = 1|ZSTD_SUPPORT = 1|g' Makefile
+sed -i -e 's|#LZ4_SUPPORT = 1|LZ4_SUPPORT = 1|g' Makefile
 make -j$(nproc) LDFLAGS=-static
 file mksquashfs unsquashfs
 strip mksquashfs unsquashfs
@@ -134,9 +135,9 @@ apk add zlib-dev zlib-static bzip2-dev bzip2-static xz-dev
 wget https://www.libarchive.org/downloads/libarchive-3.3.2.tar.gz
 tar xf libarchive-*.tar.gz
 cd libarchive-*/
-./configure --disable-shared --enable-bsdtar=static --disable-bsdcat --disable-bsdcpio --with-zlib --without-bz2lib --disable-maintainer-mode --disable-dependency-tracking CFLAGS=-no-pie LDFLAGS=-static
+./configure --disable-shared --enable-bsdtar=static --disable-bsdcat --disable-bsdcpio --with-zlib --with-lz4 --without-bz2lib --disable-maintainer-mode --disable-dependency-tracking CFLAGS=-no-pie LDFLAGS=-static
 make -j$(nproc)
-gcc -static -o bsdtar tar/bsdtar-bsdtar.o tar/bsdtar-cmdline.o tar/bsdtar-creation_set.o tar/bsdtar-read.o tar/bsdtar-subst.o tar/bsdtar-util.o tar/bsdtar-write.o .libs/libarchive.a .libs/libarchive_fe.a /lib/libz.a -llzma
+gcc -static -o bsdtar tar/bsdtar-bsdtar.o tar/bsdtar-cmdline.o tar/bsdtar-creation_set.o tar/bsdtar-read.o tar/bsdtar-subst.o tar/bsdtar-util.o tar/bsdtar-write.o .libs/libarchive.a .libs/libarchive_fe.a /lib/libz.a -llzma -llz4
 strip bsdtar
 cd -
 
