@@ -50,8 +50,10 @@ echo -ne 'AI\x02' | dd of=runtime-fuse3 bs=1 count=3 seek=8 conv=notrunc # magic
 cd -
 
 # Build static patchelf
-wget https://github.com/NixOS/patchelf/archive/0.9.tar.gz # 0.10 cripples my files, puts XXXXX inside
-tar xf 0.9.tar.gz 
+# wget https://github.com/NixOS/patchelf/archive/0.9.tar.gz
+# 0.10 cripples my files, puts XXXXX inside; tring 0.18.0
+wget https://github.com/NixOS/patchelf/archive/refs/tags/0.18.0.tar.gz
+tar xf 0.18.0.tar.gz
 cd patchelf-*/
 ./bootstrap.sh
 ./configure --prefix=/usr CFLAGS=-no-pie LDFLAGS=-static
