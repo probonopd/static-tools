@@ -49,7 +49,7 @@ jobs:
            sudo apt-get -y install qemu-user-static
            ./chroot_build.sh
 
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v4
       with:
         name: artifacts
         path: ./out/*
