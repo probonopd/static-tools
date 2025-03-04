@@ -46,6 +46,7 @@ jobs:
       env:
         ARCHITECTURE: ${{ matrix.appimage_arch }}
       run: |
+           sudo apt-get update
            sudo apt-get -y install qemu-user-static
            ./chroot_build.sh
 
