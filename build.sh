@@ -143,7 +143,8 @@ strip bsdtar
 cd -
 
 # Build static dwarfs
-apk add cmake lz4-dev openssl-dev libarchive-dev xxhash-dev ninja-build acl-dev double-conversion-dev boost1.84-dev boost1.84-chrono boost1.84-context boost1.84-filesystem boost-iostreams boost1.84-program_options boost1.84-regex boost1.84-system boost1.84-thread
+apk add cmake lz4-dev openssl-dev libarchive-dev xxhash-dev ninja-build acl-dev double-conversion-dev range-v3-dev brotli-dev jemalloc-dev flac-dev libunwind-dev gflags-dev libevent-dev fmt-dev glog-dev boost-dev \
+	boost1.84-dev boost1.84-chrono boost1.84-context boost1.84-filesystem boost-iostreams boost1.84-program_options boost1.84-regex boost1.84-system boost1.84-thread
 wget https://github.com/mhx/dwarfs/releases/download/v0.12.3/dwarfs-0.12.3.tar.xz
 tar xf dwarfs-*.tar.xz
 cd dwarfs-*/
@@ -151,7 +152,8 @@ mkdir build
 cd build
 cmake .. -GNinja -DWITH_TESTS=ON -DSTATIC_BUILD_DO_NOT_USE=ON -DWITH_FUSE_DRIVER=ON -DWITH_TOOLS=ON -DWITH_LIBDWARFS=ON \
 	-DDOUBLE_CONVERSION_LIBRARY="/usr/lib/libdouble-conversion.so" \
-	-DLIBUNWIND_LIBRARY="/usr/lib/libunwind.so"
+	-DLIBUNWIND_LIBRARY="/usr/lib/libunwind.so" \
+	-DGLOG_LIBRARY="/usr/lib/libglog.so"
 ninja
 cd -
 
