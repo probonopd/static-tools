@@ -185,12 +185,9 @@ tar xf dwarfs-*.tar.xz
 cd dwarfs-*/
 mkdir build
 cd build
-if [ "$ARCHITECTURE" != "x86_64" ]; then
-	patch -i /patches/dwarfs/libdwarfs_tool.diff cmake/libdwarfs_tool.cmake
-	cmake .. -DSTATIC_BUILD_DO_NOT_USE=ON -DWITH_UNIVERSAL_BINARY=ON
-else
-	cmake .. -DSTATIC_BUILD_DO_NOT_USE=ON -DWITH_UNIVERSAL_BINARY=ON
-fi
+# Disable the need for avx2 for greater compatibility
+patch -i /patches/dwarfs/libdwarfs_tool.diff cmake/libdwarfs_tool.cmake
+cmake .. -DSTATIC_BUILD_DO_NOT_USE=ON -DWITH_UNIVERSAL_BINARY=ON
 make && make install
 cd /
 
