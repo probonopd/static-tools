@@ -185,11 +185,8 @@ tar xf dwarfs-*.tar.xz
 cd dwarfs-*/
 mkdir build
 cd build
-if grep avx2 /proc/cpuinfo ; then
-	cmake .. -GNinja -DSTATIC_BUILD_DO_NOT_USE=ON -DWITH_UNIVERSAL_BINARY=ON
-else
-	cmake .. -GNinja -DSTATIC_BUILD_DO_NOT_USE=ON -DWITH_UNIVERSAL_BINARY=ON -DDWARFS_USE_FOLLY_MEMCPY=OFF
-fi
+# Folly's memcpy requires avx2, so we disable it for greater compatibility
+cmake .. -GNinja -DSTATIC_BUILD_DO_NOT_USE=ON -DWITH_UNIVERSAL_BINARY=ON -DDWARFS_USE_FOLLY_MEMCPY=OFF
 ninja
 cd /
 
