@@ -152,7 +152,6 @@ apk add cmake \
 	xz-static \
 	lz4-dev lz4-static \
 	acl-dev acl-static \
-	llvm-libunwind-dev llvm-libunwind-static\
   libevent-dev libevent-static \
   zstd-dev zstd-static \
   nlohmann-json \
@@ -180,6 +179,13 @@ git clone --depth=1 --branch=v0.8.3 https://github.com/Cyan4973/xxHash
 cd xxHash
 make && make install
 cd /
+# And libunwind. The libunwind from alpine doesn't work correctly all of the time on all platforms.
+git clone --depth=1 --branch=v1.8.1 https://github.com/libunwind/libunwind
+cd libunwind
+autoreconf -i
+./configure --prefix=PREFIX
+make
+make install
 # Actually build dwarfs
 wget https://github.com/mhx/dwarfs/releases/download/v0.12.4/dwarfs-0.12.4.tar.xz
 tar xf dwarfs-*.tar.xz
