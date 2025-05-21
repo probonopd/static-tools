@@ -189,6 +189,7 @@ cmake .. -DSTATIC_BUILD_DO_NOT_USE=ON -DWITH_UNIVERSAL_BINARY=ON
 make && make install
 cd /
 
+
 mkdir -p out
 cp src/runtime/runtime-fuse3 out/runtime-fuse3-$ARCHITECTURE
 cp patchelf-*/patchelf out/patchelf-$ARCHITECTURE
