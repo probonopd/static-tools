@@ -183,7 +183,7 @@ cd /
 git clone --depth=1 --branch=v1.8.1 https://github.com/libunwind/libunwind
 cd libunwind
 autoreconf -i
-./configure --prefix=PREFIX
+./configure --prefix=/usr/local
 make
 make install
 # Actually build dwarfs
