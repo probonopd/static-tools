@@ -185,7 +185,11 @@ tar xf dwarfs-*.tar.xz
 cd dwarfs-*/
 mkdir build
 cd build
-cmake .. -GNinja -DSTATIC_BUILD_DO_NOT_USE=ON -DWITH_UNIVERSAL_BINARY=ON
+if grep avx2 /proc/cpuinfo >> /dev/null ; then
+	cmake .. -GNinja -DSTATIC_BUILD_DO_NOT_USE=ON -DWITH_UNIVERSAL_BINARY=ON
+else
+	cmake .. -GNinja -DSTATIC_BUILD_DO_NOT_USE=ON -DWITH_UNIVERSAL_BINARY=ON -DDWARFS_USE_FOLLY_MEMCPY=OFF
+fi
 ninja
 cd /
 
