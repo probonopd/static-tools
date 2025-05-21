@@ -171,7 +171,7 @@ cd /
 # And glog
 git clone --depth=1 --branch v0.7.1 https://github.com/google/glog
 cd glog
-cmake -S .. -DBUILD_SHARED_LIBS=OFF
+cmake -S . -DBUILD_SHARED_LIBS=OFF
 make && make install
 cd /
 # And xxhash
