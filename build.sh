@@ -185,8 +185,9 @@ tar xf dwarfs-*.tar.xz
 cd dwarfs-*/
 mkdir build
 cd build
-if [ "$ARCHITECTURE" = "x86" ]; then
-	cmake .. -DSTATIC_BUILD_DO_NOT_USE=ON -DWITH_UNIVERSAL_BINARY=ON -DCMAKE_SYSTEM_PROCESSOR=i686
+if [ "$ARCHITECTURE" != "x86_64" ]; then
+	patch -i /patches/dwarfs/libdwarfs_tool.diff cmake/libdwarfs_tool.cmake
+	cmake .. -DSTATIC_BUILD_DO_NOT_USE=ON -DWITH_UNIVERSAL_BINARY=ON
 else
 	cmake .. -DSTATIC_BUILD_DO_NOT_USE=ON -DWITH_UNIVERSAL_BINARY=ON
 fi
