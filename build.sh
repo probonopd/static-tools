@@ -185,10 +185,8 @@ tar xf dwarfs-*.tar.xz
 cd dwarfs-*/
 mkdir build
 cd build
-cmake .. -GNinja -DSTATIC_BUILD_DO_NOT_USE=ON -DWITH_UNIVERSAL_BINARY=ON
-# Folly's memcpy requires avx2, so we disable it for greater compatibility
-sed -i 's/-DDWARFS_USE_FOLLY_MEMCPY//g' build.ninja
-ninja
+cmake .. -DSTATIC_BUILD_DO_NOT_USE=ON -DWITH_UNIVERSAL_BINARY=ON
+make && make install
 cd /
 
 mkdir -p out
