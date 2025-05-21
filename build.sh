@@ -188,7 +188,7 @@ patch -i /patches/dwarfs/libdwarfs_tool.diff ./cmake/libdwarfs_tool.cmake
 mkdir build
 cd build
 cmake .. -DSTATIC_BUILD_DO_NOT_USE=ON -DWITH_UNIVERSAL_BINARY=ON
-make && make install
+ninja
 cd /
 
 
