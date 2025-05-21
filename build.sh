@@ -183,10 +183,10 @@ cd /
 wget https://github.com/mhx/dwarfs/releases/download/v0.12.3/dwarfs-0.12.3.tar.xz
 tar xf dwarfs-*.tar.xz
 cd dwarfs-*/
-mkdir build
-cd build
 # Disable the need for avx2 for greater compatibility
 patch -i /patches/dwarfs/libdwarfs_tool.diff cmake/libdwarfs_tool.cmake
+mkdir build
+cd build
 cmake .. -DSTATIC_BUILD_DO_NOT_USE=ON -DWITH_UNIVERSAL_BINARY=ON
 make && make install
 cd /
