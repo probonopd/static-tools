@@ -185,7 +185,11 @@ tar xf dwarfs-*.tar.xz
 cd dwarfs-*/
 mkdir build
 cd build
-cmake .. -DSTATIC_BUILD_DO_NOT_USE=ON -DWITH_UNIVERSAL_BINARY=ON -DCMAKE_SYSTEM_PROCESSOR=$ARCHITECTURE
+if [ "$ARCHITECTURE" = "x86" ]; then
+	cmake .. -DSTATIC_BUILD_DO_NOT_USE=ON -DWITH_UNIVERSAL_BINARY=ON -DCMAKE_SYSTEM_PROCESSOR=i686
+else
+	cmake .. -DSTATIC_BUILD_DO_NOT_USE=ON -DWITH_UNIVERSAL_BINARY=ON
+fi
 make && make install
 cd /
 
