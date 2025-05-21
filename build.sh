@@ -93,8 +93,8 @@ wget -c https://gitlab.freedesktop.org/xdg/desktop-file-utils/-/archive/56d220dd
 tar xf desktop-file-utils-*.tar.gz
 cd desktop-file-utils-*/
 # The next 2 lines are a workaround for: checking build system type... ./config.guess: unable to guess system type
-wget 'https://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD' -O config.guess
-wget 'https://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD' -O config.sub
+wget 'http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD' -O config.guess
+wget 'http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD' -O config.sub
 autoreconf --install # https://github.com/shendurelab/LACHESIS/issues/31#issuecomment-283963819
 ./configure CFLAGS=-no-pie LDFLAGS=-static
 make -j$(nproc)
@@ -180,11 +180,13 @@ cd xxHash
 make && make install
 cd /
 # Actually build dwarfs
-wget https://github.com/mhx/dwarfs/releases/download/v0.12.3/dwarfs-0.12.3.tar.xz
+wget https://github.com/mhx/dwarfs/releases/download/v0.12.4/dwarfs-0.12.4.tar.xz
 tar xf dwarfs-*.tar.xz
 cd dwarfs-*/
-# Disable the need for avx2 for greater compatibility
-patch -i /patches/dwarfs/libdwarfs_tool.diff cmake/libdwarfs_tool.cmake
+# Remove avx2 requirement on x86.
+if [ "$ARCHITECTURE" = "x86" ]; then
+	patch -i /patches/dwarfs/libdwarfs_tool.diff cmake/libdwarfs_tool.cmake
+fi
 mkdir build
 cd build
 cmake .. -DSTATIC_BUILD_DO_NOT_USE=ON -DWITH_UNIVERSAL_BINARY=ON
