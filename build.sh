@@ -93,7 +93,7 @@ wget -c https://gitlab.freedesktop.org/xdg/desktop-file-utils/-/archive/56d220dd
 tar xf desktop-file-utils-*.tar.gz
 cd desktop-file-utils-*/
 # The next 2 lines are a workaround for: checking build system type... ./config.guess: unable to guess system type
-# These files wer downloaded from https://git.savannah.gnu.org/gitweb/?p=config.git.
+# These files were downloaded from https://git.savannah.gnu.org/gitweb/?p=config.git.
 # https://git.savannah.gnu.org often gets overloaded and returns a 502 error, so we use a local copy.
 cp /patches/desktop-file-utils/config.* ./
 autoreconf --install # https://github.com/shendurelab/LACHESIS/issues/31#issuecomment-283963819
@@ -183,7 +183,7 @@ cd /
 git clone --depth=1 --branch=v1.8.1 https://github.com/libunwind/libunwind
 cd libunwind
 autoreconf -i
-./configure --prefix=/usr/local
+./configure CFLAGS=-no-pie LDFLAGS=-static --build=$(arch)-unknown-linux-gnu --prefix=/usr/local
 make && make install
 cd /
 # Actually build dwarfs
