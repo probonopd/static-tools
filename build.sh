@@ -143,19 +143,51 @@ strip bsdtar
 cd -
 
 # Build static dwarfs
-apk add cmake lz4-dev openssl-dev libarchive-dev xxhash-dev ninja-build acl-dev double-conversion-dev range-v3-dev brotli-dev jemalloc-dev flac-dev libunwind-dev gflags-dev libevent-dev fmt-dev glog-dev boost-dev \
-	boost1.84-dev boost1.84-chrono boost1.84-context boost1.84-filesystem boost-iostreams boost1.84-program_options boost1.84-regex boost1.84-system boost1.84-thread
+# We first need newer packages
+echo "http://dl-cdn.alpinelinux.org/alpine/v3.20/main
+http://dl-cdn.alpinelinux.org/alpine/v3.20/community" >> /etc/apk/repositories
+apk update && apk upgrade
+apk add cmake \
+	xz-static \
+	lz4-dev lz4-static \
+	acl-dev acl-static \
+	libunwind-dev libunwind-static\
+  libevent-dev libevent-static \
+  zstd-dev zstd-static \
+  nlohmann-json \
+  date-dev \
+  utfcpp \
+	openssl-dev openssl-libs-static \
+	libarchive-dev libarchive-static \
+	bzip2-static \
+	expat-static \
+	upx \
+	boost1.77-dev boost1.77-chrono boost1.77-context boost1.77-filesystem boost-iostreams boost1.77-program_options boost1.77-regex boost1.77-system boost1.77-thread boost1.77-static
+# We also need to build a static version of double-conversion
+git clone --depth=1 --branch v3.3.1 https://github.com/google/double-conversion
+cd double-conversion
+cmake . && make && make install
+cd /
+# And glog
+git clone --depth=1 --branch v0.7.1 https://github.com/google/glog
+cd glog
+cmake -S .. -DBUILD_SHARED_LIBS=OFF
+make && make install
+cd /
+# And xxhash
+git clone --depth=1 --branch=v0.8.3 https://github.com/Cyan4973/xxHash
+cd xxHash
+make && make install
+cd /
+# Actually build dwarfs
 wget https://github.com/mhx/dwarfs/releases/download/v0.12.3/dwarfs-0.12.3.tar.xz
 tar xf dwarfs-*.tar.xz
 cd dwarfs-*/
 mkdir build
 cd build
-cmake .. -GNinja -DWITH_TESTS=ON -DSTATIC_BUILD_DO_NOT_USE=ON -DWITH_FUSE_DRIVER=ON -DWITH_TOOLS=ON -DWITH_LIBDWARFS=ON \
-	-DDOUBLE_CONVERSION_LIBRARY="/usr/lib/libdouble-conversion.so" \
-	-DLIBUNWIND_LIBRARY="/usr/lib/libunwind.so" \
-	-DGLOG_LIBRARY="/usr/lib/libglog.so"
+cmake .. -GNinja -DSTATIC_BUILD_DO_NOT_USE=ON -DWITH_UNIVERSAL_BINARY=ON
 ninja
-cd -
+cd /
 
 mkdir -p out
 cp src/runtime/runtime-fuse3 out/runtime-fuse3-$ARCHITECTURE
@@ -168,3 +200,4 @@ cp desktop-file-utils-*/src/desktop-file-install out/desktop-file-install-$ARCHI
 cp desktop-file-utils-*/src/desktop-file-validate out/desktop-file-validate-$ARCHITECTURE
 cp desktop-file-utils-*/src/update-desktop-database out/update-desktop-database-$ARCHITECTURE
 cp appstream-*/prefix/bin/appstreamcli out/appstreamcli-$ARCHITECTURE
+cp dwarfs-*/build/universal/dwarfs-universal out/dwarfs-$ARCHITECTURE
