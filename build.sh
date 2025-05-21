@@ -184,8 +184,8 @@ wget https://github.com/mhx/dwarfs/releases/download/v0.12.4/dwarfs-0.12.4.tar.x
 tar xf dwarfs-*.tar.xz
 cd dwarfs-*/
 # Remove avx2 requirement on x86.
-if [ "$ARCHITECTURE" = "x86" ]; then
-	patch -i /patches/dwarfs/libdwarfs_tool.diff cmake/libdwarfs_tool.cmake
+if [[ "$ARCHITECTURE" == "x86" ]]; then
+	patch -i /patches/dwarfs/libdwarfs_tool.diff ./cmake/libdwarfs_tool.cmake
 fi
 mkdir build
 cd build
