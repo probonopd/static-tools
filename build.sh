@@ -94,7 +94,7 @@ tar xf desktop-file-utils-*.tar.gz
 cd desktop-file-utils-*/
 # The next 2 lines are a workaround for: checking build system type... ./config.guess: unable to guess system type
 # These files wer downloaded from https://git.savannah.gnu.org/gitweb/?p=config.git.
-# https://git.savannah.gnu.org often gets overloaded and returns a 502 error, so  we have a local copy.
+# https://git.savannah.gnu.org often gets overloaded and returns a 502 error, so we use a local copy.
 cp /patches/desktop-file-utils/config.* ./
 autoreconf --install # https://github.com/shendurelab/LACHESIS/issues/31#issuecomment-283963819
 ./configure CFLAGS=-no-pie LDFLAGS=-static
@@ -152,7 +152,7 @@ apk add cmake \
 	xz-static \
 	lz4-dev lz4-static \
 	acl-dev acl-static \
-	libunwind-dev libunwind-static\
+	llvm-libunwind-dev llvm-libunwind-static\
   libevent-dev libevent-static \
   zstd-dev zstd-static \
   nlohmann-json \
