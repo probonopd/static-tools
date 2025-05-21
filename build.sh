@@ -190,6 +190,8 @@ mkdir build
 cd build
 cmake .. -GNinja -DSTATIC_BUILD_DO_NOT_USE=ON -DWITH_UNIVERSAL_BINARY=ON
 ninja
+file universal/dwarfs-universal
+strip universal/dwarfs-universal
 cd /
 
 
