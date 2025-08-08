@@ -72,6 +72,8 @@ cd zsync-*/
 find . -type f -exec sed -i -e 's|off_t|size_t|g' {} \;
 ./configure CFLAGS=-no-pie LDFLAGS=-static --build=$(arch)-unknown-linux-gnu
 make -j$(nproc)
+file zsync
+strip zsync
 file zsyncmake
 strip zsyncmake
 cd -
@@ -145,6 +147,7 @@ cd -
 mkdir -p out
 cp src/runtime/runtime-fuse3 out/runtime-fuse3-$ARCHITECTURE
 cp patchelf-*/patchelf out/patchelf-$ARCHITECTURE
+cp zsync-*/zsync out/zsync-$ARCHITECTURE
 cp zsync-*/zsyncmake out/zsyncmake-$ARCHITECTURE
 cp squashfs-tools-*/squashfs-tools/mksquashfs out/mksquashfs-$ARCHITECTURE
 cp squashfs-tools-*/squashfs-tools/unsquashfs out/unsquashfs-$ARCHITECTURE
