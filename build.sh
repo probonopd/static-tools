@@ -149,7 +149,7 @@ cd -
 
 # Build static bsdtar
 apk add zlib-dev zlib-static bzip2-dev bzip2-static xz-dev
-wget https://www.libarchive.org/downloads/libarchive-3.3.2.tar.gz
+wget https://github.com/libarchive/libarchive/releases/download/v3.8.2/libarchive-3.8.2.tar.gz
 tar xf libarchive-*.tar.gz
 cd libarchive-*/
 ./configure --disable-shared --enable-bsdtar=static --disable-bsdcat --disable-bsdcpio --with-zlib --without-bz2lib --disable-maintainer-mode --disable-dependency-tracking CFLAGS=-no-pie LDFLAGS=-static
