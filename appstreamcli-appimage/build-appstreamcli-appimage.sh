@@ -14,15 +14,7 @@ apt-get install -y wget curl build-essential git meson ninja-build pkg-config \
     libglib2.0-dev libxml2-dev libyaml-dev gperf libcurl4-openssl-dev \
     libsystemd-dev desktop-file-utils file fuse libfuse2 zsync imagemagick \
     libzstd-dev liblzma-dev gobject-introspection libgirepository1.0-dev \
-    libstemmer-dev gettext
-
-# Build liblmdb from source (needed for AppStream)
-wget https://git.openldap.org/openldap/openldap/-/archive/LMDB_0.9.29/openldap-LMDB_0.9.29.tar.gz
-tar xf openldap-LMDB_*.tar.gz
-cd openldap-LMDB_*/libraries/liblmdb
-make
-make prefix=/usr install
-cd ../../..
+    libstemmer-dev gettext liblmdb-dev itstool xsltproc docbook-xsl
 
 # Download and build AppStream 1.0.x
 wget -O appstream.tar.gz "https://github.com/ximion/appstream/archive/v${APPSTREAM_VERSION}.tar.gz"
@@ -30,21 +22,22 @@ tar xf appstream.tar.gz
 cd appstream-${APPSTREAM_VERSION}/
 
 # Build AppStream
-meson setup build --buildtype=release --prefix=/usr
+meson setup build --buildtype=release --prefix=/usr -Ddocs=false -Dapidocs=false
 meson install -C build
 
 cd ..
 
 # Create AppDir structure
 mkdir -p AppDir/usr/bin
+mkdir -p AppDir/usr/share/applications
 mkdir -p AppDir/usr/share/metainfo
 mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps
 
 # Copy appstreamcli binary to AppDir
 cp /usr/bin/appstreamcli AppDir/usr/bin/
 
-# Create desktop file
-cat > AppDir/appstreamcli.desktop << 'EOF'
+# Create desktop file in usr/share/applications
+cat > AppDir/usr/share/applications/appstreamcli.desktop << 'EOF'
 [Desktop Entry]
 Type=Application
 Name=AppStream CLI
@@ -83,9 +76,11 @@ if [ "${ARCH}" = "x86" ]; then
 fi
 
 # Try to download appimagetool, retry a few times if it fails
+# Use the versioned naming from go-appimage continuous release
 echo "Downloading appimagetool for ${APPIMAGETOOL_ARCH}..."
 for i in {1..3}; do
-    if wget -c "https://github.com/probonopd/go-appimage/releases/download/continuous/appimagetool-${APPIMAGETOOL_ARCH}.AppImage"; then
+    # Try the versioned name (e.g., appimagetool-907-x86_64.AppImage)
+    if wget -c "https://github.com/probonopd/go-appimage/releases/download/continuous/appimagetool-907-${APPIMAGETOOL_ARCH}.AppImage" -O appimagetool-${APPIMAGETOOL_ARCH}.AppImage; then
         echo "Downloaded appimagetool successfully"
         break
     fi
@@ -99,17 +94,23 @@ chmod +x appimagetool-${APPIMAGETOOL_ARCH}.AppImage
 echo "Verifying AppDir structure..."
 ls -la AppDir/
 ls -la AppDir/usr/bin/
-test -f AppDir/appstreamcli.desktop || { echo "ERROR: Desktop file missing"; exit 1; }
+test -f AppDir/usr/share/applications/appstreamcli.desktop || { echo "ERROR: Desktop file missing"; exit 1; }
 test -f AppDir/AppRun || { echo "ERROR: AppRun missing"; exit 1; }
 test -x AppDir/AppRun || { echo "ERROR: AppRun not executable"; exit 1; }
 test -f AppDir/usr/bin/appstreamcli || { echo "ERROR: appstreamcli binary missing"; exit 1; }
 
-# Use appimagetool with -s deploy to create AppImage with bundled libraries
-# The -s deploy flag tells appimagetool to bundle all dependencies including glibc
+# Use appimagetool to create AppImage with bundled libraries
+# go-appimage's appimagetool automatically bundles all dependencies including glibc
 # Use --appimage-extract-and-run to work in environments without FUSE (like Docker)
 echo "Creating AppImage with appimagetool..."
-echo "Command: ARCH=${ARCH} ./appimagetool-${APPIMAGETOOL_ARCH}.AppImage --appimage-extract-and-run -s deploy AppDir appstreamcli-${APPSTREAM_VERSION}-${ARCH}.AppImage"
-ARCH=${ARCH} ./appimagetool-${APPIMAGETOOL_ARCH}.AppImage --appimage-extract-and-run -s deploy AppDir appstreamcli-${APPSTREAM_VERSION}-${ARCH}.AppImage
+echo "Command: ARCH=${ARCH} ./appimagetool-${APPIMAGETOOL_ARCH}.AppImage --appimage-extract-and-run AppDir"
+ARCH=${ARCH} ./appimagetool-${APPIMAGETOOL_ARCH}.AppImage --appimage-extract-and-run AppDir
+
+# Rename the output file to match our naming convention
+# go-appimage creates files like "AppStream_CLI-<commit>-x86_64.AppImage"
+if ls AppStream_CLI-*-${ARCH}.AppImage 1> /dev/null 2>&1; then
+    mv AppStream_CLI-*-${ARCH}.AppImage appstreamcli-${APPSTREAM_VERSION}-${ARCH}.AppImage
+fi
 
 # Test the AppImage
 if [ -f "appstreamcli-${APPSTREAM_VERSION}-${ARCH}.AppImage" ]; then
