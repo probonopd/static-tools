@@ -148,15 +148,15 @@ file prefix/bin/appstreamcli
 cd -
 
 # Build static bsdtar
-#apk add zlib-dev zlib-static bzip2-dev bzip2-static xz-dev
-#wget https://www.libarchive.org/downloads/libarchive-3.3.2.tar.gz
-#tar xf libarchive-*.tar.gz
-#cd libarchive-*/
-#./configure --disable-shared --enable-bsdtar=static --disable-bsdcat --disable-bsdcpio --with-zlib --without-bz2lib --disable-maintainer-mode --disable-dependency-tracking CFLAGS=-no-pie LDFLAGS=-static
-#make -j$(nproc)
-#gcc -static -o bsdtar tar/bsdtar-bsdtar.o tar/bsdtar-cmdline.o tar/bsdtar-creation_set.o tar/bsdtar-read.o tar/bsdtar-subst.o tar/bsdtar-util.o tar/bsdtar-write.o .libs/libarchive.a .libs/libarchive_fe.a /lib/libz.a -llzma
-#strip bsdtar
-#cd -
+apk add zlib-dev zlib-static bzip2-dev bzip2-static xz-dev
+wget https://www.libarchive.org/downloads/libarchive-3.3.2.tar.gz
+tar xf libarchive-*.tar.gz
+cd libarchive-*/
+./configure --disable-shared --enable-bsdtar=static --disable-bsdcat --disable-bsdcpio --with-zlib --without-bz2lib --disable-maintainer-mode --disable-dependency-tracking CFLAGS=-no-pie LDFLAGS=-static
+make -j$(nproc)
+gcc -static -o bsdtar tar/bsdtar-bsdtar.o tar/bsdtar-cmdline.o tar/bsdtar-creation_set.o tar/bsdtar-read.o tar/bsdtar-subst.o tar/bsdtar-util.o tar/bsdtar-write.o .libs/libarchive.a .libs/libarchive_fe.a /lib/libz.a -llzma
+strip bsdtar
+cd -
 
 mkdir -p out
 cp src/runtime/runtime-fuse3 out/runtime-fuse3-$ARCHITECTURE
@@ -165,7 +165,7 @@ cp zsync-*/zsync out/zsync-$ARCHITECTURE
 cp zsync-*/zsyncmake out/zsyncmake-$ARCHITECTURE
 cp squashfs-tools-*/squashfs-tools/mksquashfs out/mksquashfs-$ARCHITECTURE
 cp squashfs-tools-*/squashfs-tools/unsquashfs out/unsquashfs-$ARCHITECTURE
-#cp libarchive-*/bsdtar out/bsdtar-$ARCHITECTURE
+cp libarchive-*/bsdtar out/bsdtar-$ARCHITECTURE
 cp desktop-file-utils-*/src/desktop-file-install out/desktop-file-install-$ARCHITECTURE
 cp desktop-file-utils-*/src/desktop-file-validate out/desktop-file-validate-$ARCHITECTURE
 cp desktop-file-utils-*/src/update-desktop-database out/update-desktop-database-$ARCHITECTURE
