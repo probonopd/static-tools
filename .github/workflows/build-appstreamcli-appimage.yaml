@@ -13,6 +13,10 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# Permissions needed for creating releases and uploading assets
+permissions:
+  contents: write
+
 env:
   APPSTREAM_VERSION: "1.0.6"
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
