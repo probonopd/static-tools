@@ -11,7 +11,7 @@ fi
 export CFLAGS="-ffunction-sections -fdata-sections -Os"
 
 apk update
-apk add alpine-sdk util-linux strace file autoconf automake libtool xz
+apk add alpine-sdk util-linux strace file autoconf automake libtool xz bash
 
 # Build static libfuse3 with patch for https://github.com/AppImage/type2-runtime/issues/10
 apk add eudev-dev gettext-dev linux-headers meson # From https://git.alpinelinux.org/aports/tree/main/fuse3/APKBUILD
@@ -117,6 +117,15 @@ meson build --default-library=static -Dintrospection=false -Dgtkdoc=false -Dcli=
 ninja -C build
 ninja -C build install
 # ldconfig # segfaults
+cd -
+# there's no libfyaml-static either :(
+wget https://github.com/pantoniou/libfyaml/releases/download/v0.9/libfyaml-0.9.tar.gz
+tar xf libfyaml-0.9.tar.gz
+cd libfyaml-0.9/
+./bootstrap.sh
+./configure CFLAGS=-no-pie LDFLAGS=-static
+make
+make install
 cd -
 wget -O appstream.tar.gz https://github.com/ximion/appstream/archive/refs/tags/v1.1.1.tar.gz # Keep at v1.1.x so as to not have a moving target
 tar xf appstream.tar.gz
