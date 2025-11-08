@@ -81,8 +81,10 @@ if [ "${ARCH}" = "x86" ]; then
 fi
 
 # Try to download appimagetool, retry a few times if it fails
+echo "Downloading appimagetool for ${APPIMAGETOOL_ARCH}..."
 for i in {1..3}; do
     if wget -c "https://github.com/probonopd/go-appimage/releases/download/continuous/appimagetool-${APPIMAGETOOL_ARCH}.AppImage"; then
+        echo "Downloaded appimagetool successfully"
         break
     fi
     echo "Download attempt $i failed, retrying..."
@@ -91,21 +93,42 @@ done
 
 chmod +x appimagetool-${APPIMAGETOOL_ARCH}.AppImage
 
+# Verify AppDir structure
+echo "Verifying AppDir structure..."
+ls -la AppDir/
+ls -la AppDir/usr/bin/
+test -f AppDir/appstreamcli.desktop || { echo "ERROR: Desktop file missing"; exit 1; }
+test -f AppDir/AppRun || { echo "ERROR: AppRun missing"; exit 1; }
+test -x AppDir/AppRun || { echo "ERROR: AppRun not executable"; exit 1; }
+test -f AppDir/usr/bin/appstreamcli || { echo "ERROR: appstreamcli binary missing"; exit 1; }
+
 # Use appimagetool with -s deploy to create AppImage with bundled libraries
 # The -s deploy flag tells appimagetool to bundle all dependencies including glibc
 # Use --appimage-extract-and-run to work in environments without FUSE (like Docker)
+echo "Creating AppImage with appimagetool..."
+echo "Command: ARCH=${ARCH} ./appimagetool-${APPIMAGETOOL_ARCH}.AppImage --appimage-extract-and-run -s deploy AppDir appstreamcli-${APPSTREAM_VERSION}-${ARCH}.AppImage"
 ARCH=${ARCH} ./appimagetool-${APPIMAGETOOL_ARCH}.AppImage --appimage-extract-and-run -s deploy AppDir appstreamcli-${APPSTREAM_VERSION}-${ARCH}.AppImage
 
 # Test the AppImage
 if [ -f "appstreamcli-${APPSTREAM_VERSION}-${ARCH}.AppImage" ]; then
     chmod +x appstreamcli-${APPSTREAM_VERSION}-${ARCH}.AppImage
-    ./appstreamcli-${APPSTREAM_VERSION}-${ARCH}.AppImage --version || echo "WARNING: AppImage test failed"
-    
+    echo ""
+    echo "========================================="
     echo "AppImage created successfully!"
+    echo "========================================="
     echo "File: appstreamcli-${APPSTREAM_VERSION}-${ARCH}.AppImage"
     ls -lh appstreamcli-${APPSTREAM_VERSION}-${ARCH}.AppImage
+    echo ""
     file appstreamcli-${APPSTREAM_VERSION}-${ARCH}.AppImage
+    echo ""
+    echo "Testing AppImage..."
+    ./appstreamcli-${APPSTREAM_VERSION}-${ARCH}.AppImage --version || echo "WARNING: AppImage test failed (this is OK in Docker environments)"
+    echo "========================================="
 else
+    echo ""
+    echo "========================================="
     echo "ERROR: AppImage was not created!"
+    echo "========================================="
+    ls -la . || true
     exit 1
 fi
