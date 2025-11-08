@@ -50,3 +50,8 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+# Build artifacts and temporary files
+miniroot/
+alpine-minirootfs-*.tar.gz
+wget-log

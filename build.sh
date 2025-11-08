@@ -108,7 +108,7 @@ strip desktop-file-install desktop-file-validate update-desktop-database
 cd ../..
 
 # Build appstreamcli
-apk add glib-static meson libxml2-dev yaml-dev yaml-static gperf
+apk add glib-static meson libxml2-dev yaml-dev yaml-static gperf curl-dev curl-static
 # Compile liblmdb from source as Alpine only ship it as a .so
 wget https://git.openldap.org/openldap/openldap/-/archive/LMDB_0.9.29/openldap-LMDB_0.9.29.tar.gz
 tar xf openldap-LMDB_*.tar.gz
@@ -117,9 +117,16 @@ make liblmdb.a
 install -D -m 644 liblmdb.a /usr/local/lib/liblmdb.a
 install -D -m 644 lmdb.h /usr/local/include/lmdb.h
 cd -
-wget -O appstream.tar.gz https://github.com/ximion/appstream/archive/v0.12.9.tar.gz
-tar xf appstream.tar.gz
-cd appstream-*/
+# Build static libxmlb (required for AppStream 1.0)
+wget -O libxmlb.tar.gz https://github.com/hughsie/libxmlb/archive/refs/tags/0.3.14.tar.gz
+tar xf libxmlb.tar.gz
+cd libxmlb-*/
+CFLAGS=-no-pie LDFLAGS=-static meson setup build --buildtype=release --default-library=static --prefix=/usr --strip -Db_lto=true -Dgtkdoc=false -Dintrospection=false -Dtests=false
+meson install -C build
+cd -
+wget -O appstream.tar.xz https://github.com/ximion/appstream/releases/download/v1.0.0/AppStream-1.0.0.tar.xz
+tar xf appstream.tar.xz
+cd AppStream-*/
 # Ask for static dependencies
 sed -i -E -e "s|(dependency\('.*')|\1, static: true|g" meson.build
 # Disable po, docs and tests
@@ -155,4 +162,4 @@ cp libarchive-*/bsdtar out/bsdtar-$ARCHITECTURE
 cp desktop-file-utils-*/src/desktop-file-install out/desktop-file-install-$ARCHITECTURE
 cp desktop-file-utils-*/src/desktop-file-validate out/desktop-file-validate-$ARCHITECTURE
 cp desktop-file-utils-*/src/update-desktop-database out/update-desktop-database-$ARCHITECTURE
-cp appstream-*/prefix/bin/appstreamcli out/appstreamcli-$ARCHITECTURE
+cp AppStream-*/prefix/bin/appstreamcli out/appstreamcli-$ARCHITECTURE
