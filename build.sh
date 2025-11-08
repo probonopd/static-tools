@@ -11,7 +11,7 @@ fi
 export CFLAGS="-ffunction-sections -fdata-sections -Os"
 
 apk update
-apk add alpine-sdk util-linux strace file autoconf automake libtool xz
+apk add alpine-sdk util-linux strace file autoconf automake libtool xz bash
 
 # Build static libfuse3 with patch for https://github.com/AppImage/type2-runtime/issues/10
 apk add eudev-dev gettext-dev linux-headers meson # From https://git.alpinelinux.org/aports/tree/main/fuse3/APKBUILD
@@ -108,26 +108,40 @@ strip desktop-file-install desktop-file-validate update-desktop-database
 cd ../..
 
 # Build appstreamcli
-apk add glib-static meson libxml2-dev yaml-dev yaml-static gperf
-# Compile liblmdb from source as Alpine only ship it as a .so
-wget https://git.openldap.org/openldap/openldap/-/archive/LMDB_0.9.29/openldap-LMDB_0.9.29.tar.gz
-tar xf openldap-LMDB_*.tar.gz
-cd openldap-LMDB_*/libraries/liblmdb
-make liblmdb.a
-install -D -m 644 liblmdb.a /usr/local/lib/liblmdb.a
-install -D -m 644 lmdb.h /usr/local/include/lmdb.h
+apk add glib-static meson libxml2-dev libxml2-static yaml-dev yaml-static gperf curl-dev curl-static curl itstool openssl-libs-static brotli-static libpsl-static libunistring-static libidn2-static nghttp2-static xz-static util-linux-static
+# libxmlb-static is missing, need to build our own
+wget https://github.com/hughsie/libxmlb/releases/download/0.3.24/libxmlb-0.3.24.tar.xz
+tar xf libxmlb-0.3.24.tar.xz
+cd libxmlb-*
+meson build --default-library=static -Dintrospection=false -Dgtkdoc=false -Dcli=false
+ninja -C build
+ninja -C build install
+# ldconfig # segfaults
 cd -
-wget -O appstream.tar.gz https://github.com/ximion/appstream/archive/v0.12.9.tar.gz
+# there's no libfyaml-static either :(
+wget https://github.com/pantoniou/libfyaml/releases/download/v0.9/libfyaml-0.9.tar.gz
+tar xf libfyaml-0.9.tar.gz
+cd libfyaml-0.9/
+./bootstrap.sh
+./configure CFLAGS=-no-pie LDFLAGS=-static --enable-portable-target
+make
+make install
+cd -
+# what does appstream even need cares for???
+wget https://github.com/c-ares/c-ares/releases/download/v1.34.5/c-ares-1.34.5.tar.gz
+tar xf c-ares-1.34.5.tar.gz
+cd c-ares-1.34.5/
+./configure CFLAGS=-no-pie LDFLAGS=-static
+make
+make install
+cd -
+wget -O appstream.tar.gz https://github.com/ximion/appstream/archive/refs/tags/v1.1.1.tar.gz # Keep at v1.1.x so as to not have a moving target
 tar xf appstream.tar.gz
 cd appstream-*/
-# Ask for static dependencies
-sed -i -E -e "s|(dependency\('.*')|\1, static: true|g" meson.build
-# Disable po, docs and tests
-sed -i -e "s|subdir('po/')||" meson.build
-sed -i -e "s|subdir('docs/')||" meson.build
-sed -i -e "s|subdir('tests/')||" meson.build
+# yes, appstream has no build flag to disable building tests
+sed -i "/subdir('tests\/')/d" meson.build
 # -no-pie is required to statically link to libc
-CFLAGS=-no-pie LDFLAGS=-static meson setup build --buildtype=release --default-library=static --prefix="$(pwd)/prefix" --strip -Db_lto=true -Db_ndebug=if-release -Dstemming=false -Dgir=false -Dapidocs=false
+CFLAGS=-no-pie LDFLAGS=-static meson setup build --buildtype=release --default-library=static --prefer-static --prefix="$(pwd)/prefix" --strip -Db_lto=true -Db_ndebug=if-release -Dstemming=false -Dgir=false -Dapidocs=false -Dinstall-docs=false -Dsystemd=false
 # Install in a staging enviroment
 meson install -C build
 file prefix/bin/appstreamcli
@@ -135,12 +149,12 @@ cd -
 
 # Build static bsdtar
 apk add zlib-dev zlib-static bzip2-dev bzip2-static xz-dev
-wget https://www.libarchive.org/downloads/libarchive-3.3.2.tar.gz
+wget https://github.com/libarchive/libarchive/releases/download/v3.8.2/libarchive-3.8.2.tar.gz
 tar xf libarchive-*.tar.gz
 cd libarchive-*/
 ./configure --disable-shared --enable-bsdtar=static --disable-bsdcat --disable-bsdcpio --with-zlib --without-bz2lib --disable-maintainer-mode --disable-dependency-tracking CFLAGS=-no-pie LDFLAGS=-static
 make -j$(nproc)
-gcc -static -o bsdtar tar/bsdtar-bsdtar.o tar/bsdtar-cmdline.o tar/bsdtar-creation_set.o tar/bsdtar-read.o tar/bsdtar-subst.o tar/bsdtar-util.o tar/bsdtar-write.o .libs/libarchive.a .libs/libarchive_fe.a /lib/libz.a -llzma
+gcc -static -o bsdtar tar/bsdtar-bsdtar.o tar/bsdtar-cmdline.o tar/bsdtar-creation_set.o tar/bsdtar-read.o tar/bsdtar-subst.o tar/bsdtar-util.o tar/bsdtar-write.o .libs/libarchive.a .libs/libarchive_fe.a /lib/libz.a -llzma -lzstd -lxml2 -lcrypto -lssl
 strip bsdtar
 cd -
 
