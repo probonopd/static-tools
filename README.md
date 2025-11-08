@@ -7,6 +7,20 @@ Building static binaries of some tools using an [Alpine Linux](https://alpinelin
 * `desktop-file-install`, `desktop-file-validate`, `update-desktop-database` (from desktop-file-utils)
 * `appstreamcli` (from AppStream)
 
+## AppStream CLI AppImages
+
+In addition to static binaries, this repository also provides fully self-contained **AppImage** builds of `appstreamcli` targeting **AppStream 1.0**. These AppImages bundle everything including glibc and are available for 4 architectures (x86, x86_64, armhf, aarch64).
+
+See [appstreamcli-appimage/README.md](appstreamcli-appimage/README.md) for details and usage instructions.
+
+**Quick start:**
+```bash
+# Download for your architecture from releases
+wget https://github.com/probonopd/static-tools/releases/download/continuous/appstreamcli-1.0.6-x86_64.AppImage
+chmod +x appstreamcli-1.0.6-x86_64.AppImage
+./appstreamcli-1.0.6-x86_64.AppImage --version
+```
+
 ## Static AppImage runtime
 
 __PLEASE NOTE: Do NOT add additional external dependencies or files. Everything shall be implemented in one file,  `runtime.c`.__
