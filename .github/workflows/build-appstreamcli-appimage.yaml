@@ -30,10 +30,10 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { arch: x86,     docker_arch: i386,   debian_arch: i386 }
-          - { arch: x86_64,  docker_arch: amd64,  debian_arch: amd64 }
-          - { arch: armhf,   docker_arch: armhf,  debian_arch: armhf }
-          - { arch: aarch64, docker_arch: arm64,  debian_arch: arm64 }
+          - { arch: x86,     docker_platform: linux/386,     debian_arch: i386 }
+          - { arch: x86_64,  docker_platform: linux/amd64,   debian_arch: amd64 }
+          - { arch: armhf,   docker_platform: linux/arm/v7,  debian_arch: armhf }
+          - { arch: aarch64, docker_platform: linux/arm64,   debian_arch: arm64 }
 
     steps:
       - name: Checkout
@@ -46,7 +46,7 @@ jobs:
 
       - name: Build AppStream CLI AppImage for ${{ matrix.arch }}
         run: |
-          docker run --rm --platform linux/${{ matrix.docker_arch }} \
+          docker run --rm --platform ${{ matrix.docker_platform }} \
             -v "$PWD:/work" \
             -w /work/appstreamcli-appimage \
             -e ARCH=${{ matrix.arch }} \
