@@ -12,7 +12,8 @@ ARCH="${ARCH:-x86_64}"
 apt-get update
 apt-get install -y wget curl build-essential git meson ninja-build pkg-config \
     libglib2.0-dev libxml2-dev libyaml-dev gperf libcurl4-openssl-dev \
-    libsystemd-dev desktop-file-utils file fuse libfuse2 zsync imagemagick
+    libsystemd-dev desktop-file-utils file fuse libfuse2 zsync imagemagick \
+    libzstd-dev liblzma-dev
 
 # Build liblmdb from source (needed for AppStream)
 wget https://git.openldap.org/openldap/openldap/-/archive/LMDB_0.9.29/openldap-LMDB_0.9.29.tar.gz
