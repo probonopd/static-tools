@@ -20,19 +20,10 @@ cd -
 sudo cp -r ./src miniroot/src
 sudo cp -r ./patches miniroot/patches
 
-# Pre-download APK index files to work around network restrictions in chroot
-sudo mkdir -p miniroot/var/cache/apk
-wget -q -O miniroot/var/cache/apk/APKINDEX.5022a8a2.tar.gz \
-    http://dl-cdn.alpinelinux.org/alpine/v3.15/main/${ARCHITECTURE}/APKINDEX.tar.gz
-wget -q -O miniroot/var/cache/apk/APKINDEX.70c88391.tar.gz \
-    http://dl-cdn.alpinelinux.org/alpine/v3.15/community/${ARCHITECTURE}/APKINDEX.tar.gz
-
 sudo mount -o bind /dev miniroot/dev
 sudo mount -t proc none miniroot/proc
 sudo mount -t sysfs none miniroot/sys
-# Set up DNS with public DNS servers that work in chroot
-echo "nameserver 8.8.8.8" | sudo tee miniroot/etc/resolv.conf
-echo "nameserver 8.8.4.4" | sudo tee -a miniroot/etc/resolv.conf
+sudo cp -p /etc/resolv.conf miniroot/etc/
 
 #############################################
 # Run build.sh in chroot
