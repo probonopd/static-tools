@@ -125,9 +125,9 @@ meson build --default-library=static -Dintrospection=false -Dgtkdoc=false -Dcli=
 ninja -C build
 ninja -C build install
 cd -
-wget -O appstream.tar.xz https://github.com/ximion/appstream/releases/download/v1.0.0/AppStream-1.0.0.tar.xz
-tar xf appstream.tar.xz
-cd AppStream-*/
+wget -O appstream.tar.gz https://github.com/ximion/appstream/archive/refs/tags/v1.0.0.tar.gz
+tar xf appstream.tar.gz
+cd appstream-*/
 # Disable tests
 sed -i "/subdir('tests\/')/d" meson.build
 # -no-pie is required to statically link to libc
