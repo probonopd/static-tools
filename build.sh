@@ -130,6 +130,8 @@ cd -
 wget -O appstream.tar.gz https://github.com/ximion/appstream/archive/refs/tags/v1.1.1.tar.gz # Keep at v1.1.x so as to not have a moving target
 tar xf appstream.tar.gz
 cd appstream-*/
+# yes, appstream has no build flag to disable building tests
+sed -i "/subdir('tests\/')/d" meson.build
 # -no-pie is required to statically link to libc
 CFLAGS=-no-pie LDFLAGS=-static meson setup build --buildtype=release --default-library=static --prefix="$(pwd)/prefix" --strip -Db_lto=true -Db_ndebug=if-release -Dstemming=false -Dgir=false -Dapidocs=false -Dinstall-docs=false -Dsystemd=false
 # Install in a staging enviroment
