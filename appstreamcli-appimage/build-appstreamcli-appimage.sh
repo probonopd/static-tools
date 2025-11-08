@@ -14,7 +14,7 @@ apt-get install -y wget curl build-essential git meson ninja-build pkg-config \
     libglib2.0-dev libxml2-dev libyaml-dev gperf libcurl4-openssl-dev \
     libsystemd-dev desktop-file-utils file fuse libfuse2 zsync imagemagick \
     libzstd-dev liblzma-dev gobject-introspection libgirepository1.0-dev \
-    libstemmer-dev
+    libstemmer-dev gettext
 
 # Build liblmdb from source (needed for AppStream)
 wget https://git.openldap.org/openldap/openldap/-/archive/LMDB_0.9.29/openldap-LMDB_0.9.29.tar.gz
