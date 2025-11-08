@@ -108,7 +108,7 @@ strip desktop-file-install desktop-file-validate update-desktop-database
 cd ../..
 
 # Build appstreamcli
-apk add glib-static meson libxml2-dev libxml2-static yaml-dev yaml-static gperf curl-dev curl-static curl itstool # libxmlb-dev
+apk add glib-static meson libxml2-dev libxml2-static yaml-dev yaml-static gperf curl-dev curl-static curl itstool openssl-libs-static brotli-static libpsl-static libunistring-static libidn2-static nghttp2-static xz-static util-linux-static
 # libxmlb-static is missing, need to build our own
 wget https://github.com/hughsie/libxmlb/releases/download/0.3.24/libxmlb-0.3.24.tar.xz
 tar xf libxmlb-0.3.24.tar.xz
@@ -127,13 +127,21 @@ cd libfyaml-0.9/
 make
 make install
 cd -
+# what does appstream even need cares for???
+wget https://github.com/c-ares/c-ares/releases/download/v1.34.5/c-ares-1.34.5.tar.gz
+tar xf c-ares-1.34.5.tar.gz
+cd c-ares-1.34.5/
+./configure CFLAGS=-no-pie LDFLAGS=-static
+make
+make install
+cd -
 wget -O appstream.tar.gz https://github.com/ximion/appstream/archive/refs/tags/v1.1.1.tar.gz # Keep at v1.1.x so as to not have a moving target
 tar xf appstream.tar.gz
 cd appstream-*/
 # yes, appstream has no build flag to disable building tests
 sed -i "/subdir('tests\/')/d" meson.build
 # -no-pie is required to statically link to libc
-CFLAGS=-no-pie LDFLAGS=-static meson setup build --buildtype=release --default-library=static --prefix="$(pwd)/prefix" --strip -Db_lto=true -Db_ndebug=if-release -Dstemming=false -Dgir=false -Dapidocs=false -Dinstall-docs=false -Dsystemd=false
+CFLAGS=-no-pie LDFLAGS=-static meson setup build --buildtype=release --default-library=static --prefer-static --prefix="$(pwd)/prefix" --strip -Db_lto=true -Db_ndebug=if-release -Dstemming=false -Dgir=false -Dapidocs=false -Dinstall-docs=false -Dsystemd=false
 # Install in a staging enviroment
 meson install -C build
 file prefix/bin/appstreamcli
