@@ -5,7 +5,7 @@ set -ex
 # This script builds appstreamcli AppImages for AppStream 1.0
 # It uses go-appimage's appimagetool with -s deploy to bundle everything including glibc
 
-APPSTREAM_VERSION="${APPSTREAM_VERSION:-1.0.6}"
+APPSTREAM_VERSION="${APPSTREAM_VERSION:-1.0.0}"
 ARCH="${ARCH:-x86_64}"
 
 # Install build dependencies

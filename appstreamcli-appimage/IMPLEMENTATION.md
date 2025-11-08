@@ -9,7 +9,7 @@ This document summarizes the implementation of the AppStream CLI AppImage build 
 ### 1. Build Script (`appstreamcli-appimage/build-appstreamcli-appimage.sh`)
 
 A comprehensive bash script that:
-- Builds AppStream 1.0.6 from source
+- Builds AppStream 1.0.0 from source
 - Compiles liblmdb (required dependency)
 - Creates a proper AppDir structure with:
   - appstreamcli binary
@@ -102,14 +102,14 @@ static-tools/
 
 1. Download the AppImage for your architecture from releases:
    ```bash
-   wget https://github.com/probonopd/static-tools/releases/download/continuous/appstreamcli-1.0.6-x86_64.AppImage
-   chmod +x appstreamcli-1.0.6-x86_64.AppImage
+   wget https://github.com/probonopd/static-tools/releases/download/continuous/appstreamcli-1.0.0-x86_64.AppImage
+   chmod +x appstreamcli-1.0.0-x86_64.AppImage
    ```
 
 2. Run it:
    ```bash
-   ./appstreamcli-1.0.6-x86_64.AppImage --version
-   ./appstreamcli-1.0.6-x86_64.AppImage validate my-app.metainfo.xml
+   ./appstreamcli-1.0.0-x86_64.AppImage --version
+   ./appstreamcli-1.0.0-x86_64.AppImage validate my-app.metainfo.xml
    ```
 
 ### For Developers
@@ -183,7 +183,7 @@ Once merged and built by CI:
 
 This implementation provides:
 - ✅ Fully self-contained AppImages for appstreamcli
-- ✅ AppStream 1.0.6 support
+- ✅ AppStream 1.0.0 support
 - ✅ 4 architecture support (x86, x86_64, armhf, aarch64)
 - ✅ Automated builds via GitHub Actions
 - ✅ Continuous release uploads

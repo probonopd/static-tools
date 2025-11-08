@@ -16,9 +16,9 @@ See [appstreamcli-appimage/README.md](appstreamcli-appimage/README.md) for detai
 **Quick start:**
 ```bash
 # Download for your architecture from releases
-wget https://github.com/probonopd/static-tools/releases/download/continuous/appstreamcli-1.0.6-x86_64.AppImage
-chmod +x appstreamcli-1.0.6-x86_64.AppImage
-./appstreamcli-1.0.6-x86_64.AppImage --version
+wget https://github.com/probonopd/static-tools/releases/download/continuous/appstreamcli-1.0.0-x86_64.AppImage
+chmod +x appstreamcli-1.0.0-x86_64.AppImage
+./appstreamcli-1.0.0-x86_64.AppImage --version
 ```
 
 ## Static AppImage runtime

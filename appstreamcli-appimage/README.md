@@ -14,7 +14,7 @@ This directory contains build scripts for creating AppImage bundles of the `apps
   - `x86_64` - 64-bit Intel/AMD
   - `armhf` - 32-bit ARM (ARMv7)
   - `aarch64` - 64-bit ARM (ARMv8/ARM64)
-- **AppStream 1.0**: Targets AppStream 1.0.6 (latest stable 1.0.x release)
+- **AppStream 1.0**: Targets AppStream 1.0.0 (latest stable 1.0.x release)
 - **Automated Builds**: GitHub Actions workflow builds and uploads to releases
 
 ## Usage
@@ -25,20 +25,20 @@ Download the AppImage for your architecture from the [continuous release](https:
 
 ```bash
 # For 64-bit Intel/AMD systems
-wget https://github.com/probonopd/static-tools/releases/download/continuous/appstreamcli-1.0.6-x86_64.AppImage
-chmod +x appstreamcli-1.0.6-x86_64.AppImage
+wget https://github.com/probonopd/static-tools/releases/download/continuous/appstreamcli-1.0.0-x86_64.AppImage
+chmod +x appstreamcli-1.0.0-x86_64.AppImage
 
 # For 32-bit Intel/AMD systems  
-wget https://github.com/probonopd/static-tools/releases/download/continuous/appstreamcli-1.0.6-x86.AppImage
-chmod +x appstreamcli-1.0.6-x86.AppImage
+wget https://github.com/probonopd/static-tools/releases/download/continuous/appstreamcli-1.0.0-x86.AppImage
+chmod +x appstreamcli-1.0.0-x86.AppImage
 
 # For 64-bit ARM systems
-wget https://github.com/probonopd/static-tools/releases/download/continuous/appstreamcli-1.0.6-aarch64.AppImage
-chmod +x appstreamcli-1.0.6-aarch64.AppImage
+wget https://github.com/probonopd/static-tools/releases/download/continuous/appstreamcli-1.0.0-aarch64.AppImage
+chmod +x appstreamcli-1.0.0-aarch64.AppImage
 
 # For 32-bit ARM systems
-wget https://github.com/probonopd/static-tools/releases/download/continuous/appstreamcli-1.0.6-armhf.AppImage
-chmod +x appstreamcli-1.0.6-armhf.AppImage
+wget https://github.com/probonopd/static-tools/releases/download/continuous/appstreamcli-1.0.0-armhf.AppImage
+chmod +x appstreamcli-1.0.0-armhf.AppImage
 ```
 
 ### Run
@@ -46,9 +46,9 @@ chmod +x appstreamcli-1.0.6-armhf.AppImage
 Simply execute the AppImage:
 
 ```bash
-./appstreamcli-1.0.6-x86_64.AppImage --version
-./appstreamcli-1.0.6-x86_64.AppImage --help
-./appstreamcli-1.0.6-x86_64.AppImage validate /path/to/metainfo.xml
+./appstreamcli-1.0.0-x86_64.AppImage --version
+./appstreamcli-1.0.0-x86_64.AppImage --help
+./appstreamcli-1.0.0-x86_64.AppImage validate /path/to/metainfo.xml
 ```
 
 ## Building Locally
@@ -65,7 +65,7 @@ docker run --rm --platform linux/amd64 \
   -v "$PWD:/work" \
   -w /work \
   -e ARCH=x86_64 \
-  -e APPSTREAM_VERSION=1.0.6 \
+  -e APPSTREAM_VERSION=1.0.0 \
   debian:bookworm \
   bash -c "apt-get update && apt-get install -y wget file && bash build-appstreamcli-appimage.sh"
 
@@ -79,7 +79,7 @@ docker run --rm --platform linux/amd64 \
 
 The build process:
 
-1. **Build AppStream**: Compiles AppStream 1.0.6 from source with all dependencies
+1. **Build AppStream**: Compiles AppStream 1.0.0 from source with all dependencies
 2. **Create AppDir**: Prepares an AppDir directory structure with:
    - The `appstreamcli` binary
    - A desktop file
@@ -106,7 +106,7 @@ GitHub Actions automatically builds AppImages for all 4 architectures on every p
 - **Base System**: Debian Bookworm (for modern libraries while maintaining compatibility)
 - **Build Tool**: Meson (AppStream's build system)
 - **Bundling Tool**: go-appimage's appimagetool with `-s deploy` flag
-- **AppStream Version**: 1.0.6 (configurable via `APPSTREAM_VERSION` environment variable)
+- **AppStream Version**: 1.0.0 (configurable via `APPSTREAM_VERSION` environment variable)
 
 ## Troubleshooting
 
