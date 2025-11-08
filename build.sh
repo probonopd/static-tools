@@ -121,11 +121,10 @@ cd -
 wget -O libxmlb.tar.gz https://github.com/hughsie/libxmlb/archive/refs/tags/0.3.14.tar.gz
 tar xf libxmlb.tar.gz
 cd libxmlb-*/
-# Tell pkg-config to prefer static libraries
-export PKG_CONFIG="pkg-config --static"
+# Remove .so files to force static linking
+rm -f /usr/lib/libgio-2.0.so* /usr/lib/libgobject-2.0.so* /usr/lib/libglib-2.0.so* /usr/lib/libintl.so* /usr/lib/libpcre.so* /usr/lib/libffi.so* /usr/lib/libgmodule-2.0.so* /usr/lib/libmount.so* /usr/lib/libblkid.so*
 CFLAGS=-no-pie LDFLAGS=-static meson setup build --buildtype=release --default-library=static --prefix=/usr --strip -Db_lto=true -Dgtkdoc=false -Dintrospection=false -Dtests=false
 meson install -C build
-unset PKG_CONFIG
 cd -
 wget -O appstream.tar.xz https://github.com/ximion/appstream/releases/download/v1.0.0/AppStream-1.0.0.tar.xz
 tar xf appstream.tar.xz
