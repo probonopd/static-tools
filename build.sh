@@ -108,7 +108,7 @@ strip desktop-file-install desktop-file-validate update-desktop-database
 cd ../..
 
 # Build appstreamcli
-apk add glib-static meson libxml2-dev yaml-dev yaml-static gperf curl-dev curl-static xz-dev zstd-dev zstd-static
+apk add glib-static meson libxml2-dev libxml2-static yaml-dev yaml-static gperf curl-dev curl-static curl itstool openssl-libs-static brotli-static libpsl-static libunistring-static libidn2-static nghttp2-static xz-static util-linux-static zstd-dev zstd-static
 # Compile liblmdb from source as Alpine only ship it as a .so
 wget https://git.openldap.org/openldap/openldap/-/archive/LMDB_0.9.29/openldap-LMDB_0.9.29.tar.gz
 tar xf openldap-LMDB_*.tar.gz
@@ -118,25 +118,20 @@ install -D -m 644 liblmdb.a /usr/local/lib/liblmdb.a
 install -D -m 644 lmdb.h /usr/local/include/lmdb.h
 cd -
 # Build static libxmlb (required for AppStream 1.0)
-wget -O libxmlb.tar.gz https://github.com/hughsie/libxmlb/archive/refs/tags/0.3.14.tar.gz
-tar xf libxmlb.tar.gz
+wget https://github.com/hughsie/libxmlb/releases/download/0.3.24/libxmlb-0.3.24.tar.xz
+tar xf libxmlb-0.3.24.tar.xz
 cd libxmlb-*/
-# Remove .so files to force static linking
-rm -f /usr/lib/libgio-2.0.so* /usr/lib/libgobject-2.0.so* /usr/lib/libglib-2.0.so* /usr/lib/libintl.so* /usr/lib/libpcre.so* /usr/lib/libffi.so* /usr/lib/libgmodule-2.0.so* /usr/lib/libmount.so* /usr/lib/libblkid.so*
-CFLAGS=-no-pie LDFLAGS=-static meson setup build --buildtype=release --default-library=static --prefix=/usr --strip -Db_lto=true -Dgtkdoc=false -Dintrospection=false -Dtests=false
-meson install -C build
+meson build --default-library=static -Dintrospection=false -Dgtkdoc=false -Dcli=false
+ninja -C build
+ninja -C build install
 cd -
 wget -O appstream.tar.xz https://github.com/ximion/appstream/releases/download/v1.0.0/AppStream-1.0.0.tar.xz
 tar xf appstream.tar.xz
 cd AppStream-*/
-# Ask for static dependencies
-sed -i -E -e "s|(dependency\('.*')|\1, static: true|g" meson.build
-# Disable po, docs and tests
-sed -i -e "s|subdir('po/')||" meson.build
-sed -i -e "s|subdir('docs/')||" meson.build
-sed -i -e "s|subdir('tests/')||" meson.build
+# Disable tests
+sed -i "/subdir('tests\/')/d" meson.build
 # -no-pie is required to statically link to libc
-CFLAGS=-no-pie LDFLAGS=-static meson setup build --buildtype=release --default-library=static --prefix="$(pwd)/prefix" --strip -Db_lto=true -Db_ndebug=if-release -Dstemming=false -Dgir=false -Dapidocs=false
+CFLAGS=-no-pie LDFLAGS=-static meson setup build --buildtype=release --default-library=static --prefer-static --prefix="$(pwd)/prefix" --strip -Db_lto=true -Db_ndebug=if-release -Dstemming=false -Dgir=false -Dapidocs=false -Dinstall-docs=false -Dsystemd=false
 # Install in a staging enviroment
 meson install -C build
 file prefix/bin/appstreamcli
