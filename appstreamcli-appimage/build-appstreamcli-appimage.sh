@@ -12,7 +12,7 @@ ARCH="${ARCH:-x86_64}"
 apt-get update
 apt-get install -y wget curl build-essential git meson ninja-build pkg-config \
     libglib2.0-dev libxml2-dev libyaml-dev gperf libcurl4-openssl-dev \
-    libsystemd-dev desktop-file-utils file
+    libsystemd-dev desktop-file-utils file fuse libfuse2 zsync imagemagick
 
 # Build liblmdb from source (needed for AppStream)
 wget https://git.openldap.org/openldap/openldap/-/archive/LMDB_0.9.29/openldap-LMDB_0.9.29.tar.gz
@@ -36,6 +36,7 @@ cd ..
 # Create AppDir structure
 mkdir -p AppDir/usr/bin
 mkdir -p AppDir/usr/share/metainfo
+mkdir -p AppDir/usr/share/icons/hicolor/256x256/apps
 
 # Copy appstreamcli binary to AppDir
 cp /usr/bin/appstreamcli AppDir/usr/bin/
@@ -52,19 +53,9 @@ Categories=Development;
 Terminal=true
 EOF
 
-# Create a simple icon (using convert from ImageMagick if available, otherwise create SVG)
-if command -v convert > /dev/null 2>&1; then
-    convert -size 256x256 xc:blue -pointsize 72 -fill white -gravity center -annotate +0+0 'AS' AppDir/appstreamcli.png
-else
-    # Create SVG icon
-    cat > AppDir/appstreamcli.svg << 'SVGEOF'
-<?xml version="1.0" encoding="UTF-8"?>
-<svg width="256" height="256" xmlns="http://www.w3.org/2000/svg">
-  <rect width="256" height="256" fill="#4A90E2"/>
-  <text x="128" y="150" font-family="Arial" font-size="100" fill="white" text-anchor="middle">AS</text>
-</svg>
-SVGEOF
-fi
+# Create icon
+convert -size 256x256 xc:#4A90E2 -pointsize 100 -fill white -gravity center -annotate +0+0 'AS' AppDir/usr/share/icons/hicolor/256x256/apps/appstreamcli.png
+ln -sf usr/share/icons/hicolor/256x256/apps/appstreamcli.png AppDir/appstreamcli.png
 
 # Create AppRun script
 cat > AppDir/AppRun << 'APPRUNEOF'
@@ -88,19 +79,33 @@ APPIMAGETOOL_ARCH="${ARCH}"
 if [ "${ARCH}" = "x86" ]; then
     APPIMAGETOOL_ARCH="i686"
 fi
-wget -c "https://github.com/probonopd/go-appimage/releases/download/continuous/appimagetool-${APPIMAGETOOL_ARCH}.AppImage"
+
+# Try to download appimagetool, retry a few times if it fails
+for i in {1..3}; do
+    if wget -c "https://github.com/probonopd/go-appimage/releases/download/continuous/appimagetool-${APPIMAGETOOL_ARCH}.AppImage"; then
+        break
+    fi
+    echo "Download attempt $i failed, retrying..."
+    sleep 2
+done
+
 chmod +x appimagetool-${APPIMAGETOOL_ARCH}.AppImage
 
-# Extract appimagetool (it's an AppImage itself)
-./appimagetool-${APPIMAGETOOL_ARCH}.AppImage --appimage-extract
-mv squashfs-root appimagetool-extracted
-
 # Use appimagetool with -s deploy to create AppImage with bundled libraries
-ARCH=${ARCH} ./appimagetool-extracted/AppRun -s deploy AppDir appstreamcli-${APPSTREAM_VERSION}-${ARCH}.AppImage
+# The -s deploy flag tells appimagetool to bundle all dependencies including glibc
+# Use --appimage-extract-and-run to work in environments without FUSE (like Docker)
+ARCH=${ARCH} ./appimagetool-${APPIMAGETOOL_ARCH}.AppImage --appimage-extract-and-run -s deploy AppDir appstreamcli-${APPSTREAM_VERSION}-${ARCH}.AppImage
 
 # Test the AppImage
-./appstreamcli-${APPSTREAM_VERSION}-${ARCH}.AppImage --version || true
-
-echo "AppImage created: appstreamcli-${APPSTREAM_VERSION}-${ARCH}.AppImage"
-ls -lh appstreamcli-${APPSTREAM_VERSION}-${ARCH}.AppImage
-file appstreamcli-${APPSTREAM_VERSION}-${ARCH}.AppImage
+if [ -f "appstreamcli-${APPSTREAM_VERSION}-${ARCH}.AppImage" ]; then
+    chmod +x appstreamcli-${APPSTREAM_VERSION}-${ARCH}.AppImage
+    ./appstreamcli-${APPSTREAM_VERSION}-${ARCH}.AppImage --version || echo "WARNING: AppImage test failed"
+    
+    echo "AppImage created successfully!"
+    echo "File: appstreamcli-${APPSTREAM_VERSION}-${ARCH}.AppImage"
+    ls -lh appstreamcli-${APPSTREAM_VERSION}-${ARCH}.AppImage
+    file appstreamcli-${APPSTREAM_VERSION}-${ARCH}.AppImage
+else
+    echo "ERROR: AppImage was not created!"
+    exit 1
+fi

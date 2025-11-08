@@ -1,0 +1,10 @@
+# Build artifacts
+*.AppImage
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+AppDir/
+openldap-*/
+appstream-*/
+appimagetool-*
+squashfs-root/
