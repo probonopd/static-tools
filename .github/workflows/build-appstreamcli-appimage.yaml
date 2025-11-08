@@ -66,7 +66,12 @@ jobs:
       - name: Test AppImage
         run: |
           chmod +x appstreamcli-appimage/appstreamcli-${{ env.APPSTREAM_VERSION }}-${{ matrix.arch }}.AppImage
-          ./appstreamcli-appimage/appstreamcli-${{ env.APPSTREAM_VERSION }}-${{ matrix.arch }}.AppImage --version || echo "Test failed but continuing"
+          # Only test on native architecture (x86_64), skip cross-compiled ones
+          if [ "${{ matrix.arch }}" = "x86_64" ]; then
+            ./appstreamcli-appimage/appstreamcli-${{ env.APPSTREAM_VERSION }}-${{ matrix.arch }}.AppImage --version || echo "Test failed but continuing"
+          else
+            echo "Skipping test for cross-compiled ${{ matrix.arch }} AppImage"
+          fi
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
