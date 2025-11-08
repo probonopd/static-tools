@@ -123,7 +123,7 @@ wget https://github.com/pantoniou/libfyaml/releases/download/v0.9/libfyaml-0.9.t
 tar xf libfyaml-0.9.tar.gz
 cd libfyaml-0.9/
 ./bootstrap.sh
-./configure CFLAGS=-no-pie LDFLAGS=-static
+./configure CFLAGS=-no-pie LDFLAGS=-static --enable-portable-target
 make
 make install
 cd -
