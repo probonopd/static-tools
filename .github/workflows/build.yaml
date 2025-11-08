@@ -61,4 +61,3 @@ jobs:
       with:
         files: out/*
         tag_name: continuous
-        
