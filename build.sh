@@ -108,7 +108,7 @@ strip desktop-file-install desktop-file-validate update-desktop-database
 cd ../..
 
 # Build appstreamcli
-apk add glib-static meson libxml2-dev yaml-dev yaml-static gperf curl-dev curl-static
+apk add glib-static meson libxml2-dev yaml-dev yaml-static gperf curl-dev curl-static xz-dev xz-static zstd-dev zstd-static
 # Compile liblmdb from source as Alpine only ship it as a .so
 wget https://git.openldap.org/openldap/openldap/-/archive/LMDB_0.9.29/openldap-LMDB_0.9.29.tar.gz
 tar xf openldap-LMDB_*.tar.gz
@@ -121,8 +121,11 @@ cd -
 wget -O libxmlb.tar.gz https://github.com/hughsie/libxmlb/archive/refs/tags/0.3.14.tar.gz
 tar xf libxmlb.tar.gz
 cd libxmlb-*/
+# Tell pkg-config to prefer static libraries
+export PKG_CONFIG="pkg-config --static"
 CFLAGS=-no-pie LDFLAGS=-static meson setup build --buildtype=release --default-library=static --prefix=/usr --strip -Db_lto=true -Dgtkdoc=false -Dintrospection=false -Dtests=false
 meson install -C build
+unset PKG_CONFIG
 cd -
 wget -O appstream.tar.xz https://github.com/ximion/appstream/releases/download/v1.0.0/AppStream-1.0.0.tar.xz
 tar xf appstream.tar.xz
