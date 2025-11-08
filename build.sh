@@ -95,8 +95,9 @@ wget -c https://gitlab.freedesktop.org/xdg/desktop-file-utils/-/archive/56d220dd
 tar xf desktop-file-utils-*.tar.gz
 cd desktop-file-utils-*/
 # The next 2 lines are a workaround for: checking build system type... ./config.guess: unable to guess system type
-wget 'http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD' -O config.guess
-wget 'http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD' -O config.sub
+# These files were downloaded from https://git.savannah.gnu.org/gitweb/?p=config.git.
+# https://git.savannah.gnu.org often gets overloaded and returns a 502 error, so we use a local copy.
+cp /patches/desktop-file-utils/config.* ./
 autoreconf --install # https://github.com/shendurelab/LACHESIS/issues/31#issuecomment-283963819
 ./configure CFLAGS=-no-pie LDFLAGS=-static
 make -j$(nproc)
@@ -144,6 +145,57 @@ gcc -static -o bsdtar tar/bsdtar-bsdtar.o tar/bsdtar-cmdline.o tar/bsdtar-creati
 strip bsdtar
 cd -
 
+# Build static dwarfs
+# We first need newer packages
+echo "http://dl-cdn.alpinelinux.org/alpine/v3.20/main
+http://dl-cdn.alpinelinux.org/alpine/v3.20/community" >> /etc/apk/repositories
+apk update && apk upgrade
+apk add cmake \
+	xz-static \
+	lz4-dev lz4-static \
+	acl-dev acl-static \
+  libevent-dev libevent-static \
+  zstd-dev zstd-static \
+  nlohmann-json \
+  date-dev \
+  utfcpp \
+	openssl-dev openssl-libs-static \
+	libarchive-dev libarchive-static \
+	bzip2-static \
+	expat-static \
+	upx \
+	boost1.77-dev boost1.77-chrono boost1.77-context boost1.77-filesystem boost-iostreams boost1.77-program_options boost1.77-regex boost1.77-system boost1.77-thread boost1.77-static
+# We also need to build a static version of double-conversion
+git clone --depth=1 --branch v3.3.1 https://github.com/google/double-conversion
+cd double-conversion
+cmake . && make && make install
+cd /
+# And glog
+git clone --depth=1 --branch v0.7.1 https://github.com/google/glog
+cd glog
+cmake -S . -DBUILD_SHARED_LIBS=OFF
+make && make install
+cd /
+# And xxhash
+git clone --depth=1 --branch=v0.8.3 https://github.com/Cyan4973/xxHash
+cd xxHash
+make && make install
+cd /
+# Actually build dwarfs
+wget https://github.com/mhx/dwarfs/releases/download/v0.12.4/dwarfs-0.12.4.tar.xz
+tar xf dwarfs-*.tar.xz
+cd dwarfs-*/
+# Patch out avx2 requirement
+patch -i /patches/dwarfs/libdwarfs_tool.diff ./cmake/libdwarfs_tool.cmake
+mkdir build
+cd build
+cmake .. -GNinja -DSTATIC_BUILD_DO_NOT_USE=ON -DWITH_UNIVERSAL_BINARY=ON
+ninja
+file universal/dwarfs-universal
+strip universal/dwarfs-universal
+cd /
+
+
 mkdir -p out
 cp src/runtime/runtime-fuse3 out/runtime-fuse3-$ARCHITECTURE
 cp patchelf-*/patchelf out/patchelf-$ARCHITECTURE
@@ -156,3 +208,4 @@ cp desktop-file-utils-*/src/desktop-file-install out/desktop-file-install-$ARCHI
 cp desktop-file-utils-*/src/desktop-file-validate out/desktop-file-validate-$ARCHITECTURE
 cp desktop-file-utils-*/src/update-desktop-database out/update-desktop-database-$ARCHITECTURE
 cp appstream-*/prefix/bin/appstreamcli out/appstreamcli-$ARCHITECTURE
+cp dwarfs-*/build/universal/dwarfs-universal out/dwarfs-$ARCHITECTURE
