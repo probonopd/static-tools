@@ -8,3 +8,4 @@ openldap-*/
 appstream-*/
 appimagetool-*
 squashfs-root/
+wget-log*
