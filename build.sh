@@ -27,13 +27,19 @@ ninja install
 cd ../../
 
 # Build static squashfuse
-apk add zstd-dev zstd-static zlib-dev zlib-static # fuse-dev fuse-static fuse3-static fuse3-dev
+# zlib (gzip), zstd, xz (liblzma) and lz4: squashfuse detects the decompressors it can find, so an
+# AppImage whose SquashFS uses xz (most older tools) or lz4 can be mounted, not only zlib and zstd
+apk add zstd-dev zstd-static zlib-dev zlib-static xz-dev xz-static lz4-dev lz4-static # fuse-dev fuse-static fuse3-static fuse3-dev
 wget -c -q "https://github.com/vasi/squashfuse/archive/e51978c.tar.gz"
 tar xf e51978c.tar.gz
 cd squashfuse-*/
 ./autogen.sh
 ./configure --help
 ./configure CFLAGS=-no-pie LDFLAGS=-static
+# Fail now, not silently, if a decompressor was not found (configure only detects them)
+for DEC in ZLIB LZMA LZ4 ZSTD ; do
+	grep -q "^#define HAVE_${DEC}_H 1" config.h || { echo "squashfuse was built without $DEC support"; grep -i "HAVE_.*_H" config.h; exit 1; }
+done
 make -j$(nproc)
 make install
 /usr/bin/install -c -m 644 *.h '/usr/local/include/squashfuse' # ll.h
