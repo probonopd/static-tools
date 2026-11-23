@@ -90,22 +90,14 @@ strip mksquashfs unsquashfs
 cd -
 
 # Build static desktop-file-utils
-# apk add glib-static glib-dev
-wget -c https://gitlab.freedesktop.org/xdg/desktop-file-utils/-/archive/56d220dd679c7c3a8f995a41a27a7d6f3df49dea/desktop-file-utils-56d220dd679c7c3a8f995a41a27a7d6f3df49dea.tar.gz
+apk add util-linux-static
+wget -c https://gitlab.freedesktop.org/xdg/desktop-file-utils/-/archive/0.29/desktop-file-utils-0.29.tar.gz
 tar xf desktop-file-utils-*.tar.gz
 cd desktop-file-utils-*/
-# The next 2 lines are a workaround for: checking build system type... ./config.guess: unable to guess system type
-wget 'http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD' -O config.guess
-wget 'http://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.sub;hb=HEAD' -O config.sub
-autoreconf --install # https://github.com/shendurelab/LACHESIS/issues/31#issuecomment-283963819
-./configure CFLAGS=-no-pie LDFLAGS=-static
-make -j$(nproc)
-cd src/
-gcc -static -o desktop-file-validate keyfileutils.o validate.o validator.o mimeutils.o -lglib-2.0 -lintl
-gcc -static -o update-desktop-database  update-desktop-database.o mimeutils.o -lglib-2.0 -lintl
-gcc -static -o desktop-file-install keyfileutils.o validate.o install.o mimeutils.o -lglib-2.0 -lintl
-strip desktop-file-install desktop-file-validate update-desktop-database
-cd ../..
+CFLAGS=-no-pie LDFLAGS=-static meson setup build --prefer-static --buildtype=release
+meson compile -v -C build
+strip build/src/desktop-file-install build/src/desktop-file-validate build/src/update-desktop-database
+cd -
 
 # Build appstreamcli
 apk add glib-static meson libxml2-dev libxml2-static yaml-dev yaml-static gperf curl-dev curl-static curl itstool openssl-libs-static brotli-static libpsl-static libunistring-static libidn2-static nghttp2-static xz-static util-linux-static
@@ -166,7 +158,7 @@ cp zsync-*/zsyncmake out/zsyncmake-$ARCHITECTURE
 cp squashfs-tools-*/squashfs-tools/mksquashfs out/mksquashfs-$ARCHITECTURE
 cp squashfs-tools-*/squashfs-tools/unsquashfs out/unsquashfs-$ARCHITECTURE
 cp libarchive-*/bsdtar out/bsdtar-$ARCHITECTURE
-cp desktop-file-utils-*/src/desktop-file-install out/desktop-file-install-$ARCHITECTURE
-cp desktop-file-utils-*/src/desktop-file-validate out/desktop-file-validate-$ARCHITECTURE
-cp desktop-file-utils-*/src/update-desktop-database out/update-desktop-database-$ARCHITECTURE
+cp desktop-file-utils-*/build/src/desktop-file-install out/desktop-file-install-$ARCHITECTURE
+cp desktop-file-utils-*/build/src/desktop-file-validate out/desktop-file-validate-$ARCHITECTURE
+cp desktop-file-utils-*/build/src/update-desktop-database out/update-desktop-database-$ARCHITECTURE
 cp appstream-*/prefix/bin/appstreamcli out/appstreamcli-$ARCHITECTURE
